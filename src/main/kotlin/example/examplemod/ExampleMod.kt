@@ -1,7 +1,9 @@
 package example.examplemod
 
 import example.examplemod.block.ModBlocks
+import net.minecraft.client.KeyMapping
 import net.minecraft.client.Minecraft
+import net.minecraftforge.client.event.InputEvent
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent
@@ -10,6 +12,13 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
 import thedarkcolour.kotlinforforge.forge.runForDist
+import javax.swing.text.JTextComponent.KeyBinding
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent
+import net.minecraftforge.common.MinecraftForge
+
+import net.minecraftforge.eventbus.api.SubscribeEvent
+import org.lwjgl.glfw.GLFW
+
 
 /**
  * Main mod class. Should be an `object` declaration annotated with `@Mod`.
@@ -30,10 +39,11 @@ object ExampleMod {
 
         // Register the KDeferredRegister to the mod-specific event bus
         ModBlocks.REGISTRY.register(MOD_BUS)
-
         val obj = runForDist(
             clientTarget = {
                 MOD_BUS.addListener(::onClientSetup)
+                MOD_BUS.addListener(::registerKeys)
+                MinecraftForge.EVENT_BUS.register(Events)
                 Minecraft.getInstance()
             },
             serverTarget = {
@@ -42,6 +52,10 @@ object ExampleMod {
             })
 
         println(obj)
+    }
+
+    fun registerKeys(e: RegisterKeyMappingsEvent) {
+        e.register(Events.open)
     }
 
     /**
@@ -60,3 +74,4 @@ object ExampleMod {
         LOGGER.log(Level.INFO, "Server starting...")
     }
 }
+
