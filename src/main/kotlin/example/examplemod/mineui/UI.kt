@@ -1,6 +1,7 @@
 package example.examplemod.mineui
 
 import com.mojang.blaze3d.vertex.PoseStack
+import example.examplemod.mineui.context.RenderContext
 
 class UI(render: RenderContext.() -> Unit) {
     val context = RenderContext(this, render)
@@ -22,3 +23,7 @@ class UI(render: RenderContext.() -> Unit) {
         return context.drawer.onHover(x, y, type)
     }
 }
+
+data class HookKey(
+    val type: String, val id: Any
+)

@@ -1,14 +1,15 @@
 package example.examplemod.mineui
 
+import example.examplemod.mineui.context.RenderContext
 import example.examplemod.mineui.drawer.Label
 import example.examplemod.mineui.drawer.Stack
-import example.examplemod.mineui.props.ContainerStyle
-import java.awt.Color
+import example.examplemod.mineui.style.ContainerStyle
+import example.examplemod.mineui.style.LabelStyle
 
-fun RenderContext.label(text: () -> String) = label(text::class, text)
+fun RenderContext.label(style: LabelStyle.() -> Unit = {}, text: () -> String) = label(text::class, style, text)
 
-fun RenderContext.label(key: Any, text: () -> String) = child(key) {
-    drawer = Label(text())
+fun RenderContext.label(key: Any, style: LabelStyle.() -> Unit = {}, text: () -> String) = child(key) {
+    drawer = Label(text(), LabelStyle().apply(style))
 }
 
 fun RenderContext.stack(style: ContainerStyle.() -> Unit = {}, children: RenderContext.() -> Unit) =
@@ -21,8 +22,4 @@ fun RenderContext.stack(
     drawer = Stack(ContainerStyle().apply(style))
 
     children(this) //render children
-}
-
-open class StyleProps {
-    var color: Color = Color.WHITE
 }

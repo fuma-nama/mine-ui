@@ -2,7 +2,7 @@ package example.examplemod.mineui.drawer
 
 import example.examplemod.mineui.context.DrawContext
 import example.examplemod.mineui.context.MouseContext
-import example.examplemod.mineui.props.ContainerStyle
+import example.examplemod.mineui.style.ContainerStyle
 import net.minecraft.client.gui.Gui
 
 abstract class Container(val style: ContainerStyle) : Drawer() {

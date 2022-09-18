@@ -1,6 +1,6 @@
 package example.examplemod.mineui.hooks
 
-import example.examplemod.mineui.RenderContext
+import example.examplemod.mineui.context.RenderContext
 
 class Context<V> internal constructor(val initial: V)
 

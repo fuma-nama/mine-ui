@@ -1,8 +1,8 @@
 package example.examplemod.mineui.drawer
 
-import example.examplemod.mineui.RenderContext
 import example.examplemod.mineui.context.DrawContext
 import example.examplemod.mineui.context.MouseContext
+import example.examplemod.mineui.context.RenderContext
 
 data class Info(val width: Int, val height: Int)
 abstract class Drawer {

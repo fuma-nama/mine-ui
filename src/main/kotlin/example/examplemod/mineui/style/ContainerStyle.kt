@@ -1,4 +1,4 @@
-package example.examplemod.mineui.props
+package example.examplemod.mineui.style
 
 import java.awt.Color
 

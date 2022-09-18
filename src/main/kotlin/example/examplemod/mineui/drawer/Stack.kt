@@ -2,7 +2,7 @@ package example.examplemod.mineui.drawer
 
 import example.examplemod.mineui.context.DrawContext
 import example.examplemod.mineui.context.MouseContext
-import example.examplemod.mineui.props.ContainerStyle
+import example.examplemod.mineui.style.ContainerStyle
 
 class Stack(style: ContainerStyle) : Container(style) {
     override fun DrawContext.drawChild() {
