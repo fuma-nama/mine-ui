@@ -1,21 +1,24 @@
 package example.examplemod.mineui
 
-import example.examplemod.mineui.drawer.Drawer
+import example.examplemod.mineui.drawer.Label
 import example.examplemod.mineui.drawer.Stack
+import example.examplemod.mineui.props.ContainerStyle
 import java.awt.Color
 
 fun RenderContext.label(text: () -> String) = label(text::class, text)
 
 fun RenderContext.label(key: Any, text: () -> String) = child(key) {
-    drawer = Drawer {
-        font.draw(stack, text(), 0F, 0F, Color.WHITE.rgb)
-    }
+    drawer = Label(text())
 }
 
-fun RenderContext.stack(children: RenderContext.() -> Unit) = stack(children::class, children)
+fun RenderContext.stack(style: ContainerStyle.() -> Unit = {}, children: RenderContext.() -> Unit) =
+    stack(children::class, style, children)
 
-fun RenderContext.stack(key: Any, children: RenderContext.() -> Unit) = child(key) {
-    drawer = Stack()
+fun RenderContext.stack(
+    key: Any,
+    style: ContainerStyle.() -> Unit = {},
+    children: RenderContext.() -> Unit) = child(key) {
+    drawer = Stack(ContainerStyle().apply(style))
 
     children(this) //render children
 }
