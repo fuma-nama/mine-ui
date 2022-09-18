@@ -1,11 +1,10 @@
 package example.examplemod.mineui
 
 import com.mojang.blaze3d.vertex.PoseStack
+import example.examplemod.mineui.context.DrawContext
 import example.examplemod.mineui.drawer.DefaultDrawer
 import example.examplemod.mineui.drawer.Drawer
 import example.examplemod.mineui.hooks.Context
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.Font
 
 @DslMarker
 annotation class DslBuilder
@@ -14,29 +13,9 @@ fun component(render: RenderContext.() -> Unit): UI {
     return UI(render)
 }
 
-class UI(render: RenderContext.() -> Unit) {
-    val context = RenderContext(this, render)
-
-    init {
-        context.ui = this
-        context.render()
-    }
-
-    fun draw(stack: PoseStack) {
-        context.draw(stack)
-    }
-}
-
 data class HookKey(
     val type: String, val id: Any
 )
-
-class DrawContext(
-    val stack: PoseStack,
-    val rendered: RenderContext
-) {
-    var font: Font = Minecraft.getInstance().font
-}
 
 @DslBuilder
 class RenderContext(
@@ -45,9 +24,13 @@ class RenderContext(
     var contexts: Map<Context<*>, Any?> = hashMapOf()
 ) {
     val hooks: HashMap<HookKey, Any?> = hashMapOf()
-    var drawer: Drawer = DefaultDrawer()
+    var drawer: Drawer = DefaultDrawer(this)
+        set(v) {
+            v.rendered = this
+            field = v
+        }
 
-    val children = hashMapOf<Any, RenderContext>()
+    val children = linkedMapOf<Any, RenderContext>()
     private var snapshot: Map<Any, RenderContext>? = null
 
     fun update() {
@@ -101,9 +84,11 @@ class RenderContext(
         children[key] = element.render()
     }
 
-    fun draw(stack: PoseStack) {
+    fun draw(stack: PoseStack, mouseX: Int, mouseY: Int) {
         with (drawer) {
-            DrawContext(stack, this@RenderContext).draw()
+            DrawContext(
+                stack, mouseX, mouseY
+            ).draw()
         }
     }
 }
