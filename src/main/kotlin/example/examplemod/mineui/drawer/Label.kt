@@ -2,24 +2,29 @@ package example.examplemod.mineui.drawer
 
 import example.examplemod.mineui.context.DrawContext
 import example.examplemod.mineui.context.MouseContext
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.Font
-import java.awt.Color
+import example.examplemod.mineui.style.LabelStyle
+import net.minecraft.network.chat.ComponentContents
+import net.minecraft.network.chat.MutableComponent
 
 class Label(
-    val text: String,
-    val font: Font = Minecraft.getInstance().font
+    text: String,
+    val style: LabelStyle
 ) : Drawer() {
-    override fun getInfo(context: MouseContext) = Info(
-        width = font.width(text),
-        height = font.wordWrapHeight(text, text.count { it == '\n' })
-    )
-    init {
-        val a = font.wordWrapHeight("hello", 1)
-        println("$a ${font.lineHeight}")
+    private val comp = MutableComponent.create(ComponentContents.EMPTY).also {
+        it.append(text)
+
+        for (s in style.fontStyle)
+            it.withStyle(s.style)
     }
 
+    override fun getInfo(context: MouseContext) = Info(
+        width = style.font.width(comp),
+        height = style.font.lineHeight
+    )
+
     override fun DrawContext.draw() {
-        font.draw(stack, text, 0F, 0F, Color.WHITE.rgb)
+        with (style) {
+            font.draw(stack, comp, 0F, 0F, color.rgb)
+        }
     }
 }

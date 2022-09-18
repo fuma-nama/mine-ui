@@ -1,18 +1,16 @@
 package example.examplemod.screen
 
 import com.mojang.blaze3d.vertex.PoseStack
-import example.examplemod.mineui.RenderContext
 import example.examplemod.mineui.component
-import example.examplemod.mineui.drawer.Stack
-import example.examplemod.mineui.hooks.Context
+import example.examplemod.mineui.context.RenderContext
 import example.examplemod.mineui.hooks.createContext
 import example.examplemod.mineui.hooks.useContext
 import example.examplemod.mineui.hooks.useState
 import example.examplemod.mineui.label
 import example.examplemod.mineui.stack
-import net.minecraft.network.chat.Component
-
+import example.examplemod.mineui.style.FontStyle
 import net.minecraft.client.gui.screens.Screen
+import net.minecraft.network.chat.Component
 import java.awt.Color
 
 class Theme(
@@ -28,7 +26,11 @@ class ExampleGUI(p_96550_: Component?) : Screen(p_96550_) {
         }
 
         stack({padding(10); gap = 5; background = Color.BLACK}) {
-            label { "Hello World" }
+            label({
+                fontSize = 20F;
+                fontStyle = arrayOf(FontStyle.Bold, FontStyle.Italic)
+            }) { "Hello World" }
+
             label { "Hello Kane" }
             label { "Hello MONEY" }
         }
