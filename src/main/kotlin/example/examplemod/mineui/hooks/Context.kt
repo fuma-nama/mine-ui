@@ -1,10 +1,10 @@
 package example.examplemod.mineui.hooks
 
-import example.examplemod.mineui.context.RenderContext
+import example.examplemod.mineui.core.Component
 
 class Context<V> internal constructor(val initial: V)
 
-inline fun<reified V> RenderContext.useContext(context: Context<V>): V {
+inline fun<reified V> Component.useContext(context: Context<V>): V {
     return contexts.getOrDefault(context, context.initial) as V
 }
 

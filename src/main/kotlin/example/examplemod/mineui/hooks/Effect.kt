@@ -1,7 +1,7 @@
 package example.examplemod.mineui.hooks
 
 import example.examplemod.mineui.HookKey
-import example.examplemod.mineui.context.RenderContext
+import example.examplemod.mineui.core.Component
 import kotlin.reflect.KProperty
 
 class MemoHook<V>(
@@ -9,7 +9,7 @@ class MemoHook<V>(
     val value: V
 )
 
-fun<V> RenderContext.useMemo(vararg dependencies: Any?, call: () -> V): V {
+fun<V> Component.useMemo(vararg dependencies: Any?, call: () -> V): V {
     val key = HookKey("useEffect", call::class)
     val cache = use<MemoHook<V>>(key)
 
@@ -22,7 +22,7 @@ fun<V> RenderContext.useMemo(vararg dependencies: Any?, call: () -> V): V {
     return updated.value
 }
 
-fun RenderContext.useEffect(vararg dependencies: Any?, call: () -> Unit) {
+fun Component.useEffect(vararg dependencies: Any?, call: () -> Unit) {
     val key = HookKey("useEffect", call::class)
     val cache = use<Array<Any?>>(key)
 
@@ -33,16 +33,16 @@ fun RenderContext.useEffect(vararg dependencies: Any?, call: () -> Unit) {
     hooks[key] = dependencies
 }
 
-inline fun<reified V> RenderContext.useState(noinline initial: () -> V) = useState(initial::class, initial())
+inline fun<reified V> Component.useState(noinline initial: () -> V) = useState(initial::class, initial())
 
-inline fun<reified V> RenderContext.useState(id: Any, initial: V): State<V> {
+inline fun<reified V> Component.useState(id: Any, initial: V): State<V> {
     val key = HookKey("useState", id)
     val value = use(key) { initial }
 
     return State(value, this)
 }
 
-class State<V>(var value: V, val context: RenderContext) {
+class State<V>(var value: V, val context: Component) {
     fun update(value: V) {
         this.value = value
         context.update()
