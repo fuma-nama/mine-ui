@@ -1,25 +1,28 @@
 package example.examplemod.mineui
 
-import example.examplemod.mineui.context.RenderContext
-import example.examplemod.mineui.drawer.Label
-import example.examplemod.mineui.drawer.Stack
-import example.examplemod.mineui.style.ContainerStyle
-import example.examplemod.mineui.style.LabelStyle
+import example.examplemod.mineui.core.Component
+import example.examplemod.mineui.element.*
 
-fun RenderContext.label(style: LabelStyle.() -> Unit = {}, text: () -> String) = label(text::class, style, text)
+fun Component.label(style: LabelStyle.() -> Unit = {}, text: () -> String) = label(style::class, style, text)
 
-fun RenderContext.label(key: Any, style: LabelStyle.() -> Unit = {}, text: () -> String) = child(key) {
-    drawer = Label(text(), LabelStyle().apply(style))
+fun Component.label(key: Any, style: LabelStyle.() -> Unit = {}, text: () -> String) = child(key) {
+    element(::TextElement, style).text = text()
 }
 
-fun RenderContext.stack(style: ContainerStyle.() -> Unit = {}, children: RenderContext.() -> Unit) =
+fun Component.button(style: ButtonStyle.() -> Unit = {}, content: () -> String) = button(content::class, content(), style)
+
+fun Component.button(key: Any, content: String, style: ButtonStyle.() -> Unit) = child(key) {
+    element(::ButtonElement, style).setText(content)
+}
+
+fun Component.stack(style: StackStyle.() -> Unit = {}, children: Component.() -> Unit) =
     stack(children::class, style, children)
 
-fun RenderContext.stack(
+fun Component.stack(
     key: Any,
-    style: ContainerStyle.() -> Unit = {},
-    children: RenderContext.() -> Unit) = child(key) {
-    drawer = Stack(ContainerStyle().apply(style))
+    style: StackStyle.() -> Unit = {},
+    children: Component.() -> Unit) = child(key) {
+    element(::StackLayout, style)
 
     children(this) //render children
 }
