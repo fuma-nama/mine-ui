@@ -1,8 +1,9 @@
 package example.examplemod.mineui.element
 
 import example.examplemod.mineui.PosXY
+import example.examplemod.mineui.core.RenderNode
 import example.examplemod.mineui.utils.*
-import example.examplemod.mineui.wrapper.DrawStack
+import net.minecraft.client.gui.components.events.GuiEventListener
 
 open class StyleContext {
     var size: SizeInput = FitContent
@@ -12,53 +13,35 @@ open class StyleContext {
     }
 }
 
-abstract class UIElement<S: StyleContext>(val createStyle: () -> S) {
+abstract class UIElement<S: StyleContext>(val createStyle: () -> S): RenderNode() {
     var style: S = createStyle()
+    var listener: GuiEventListener? = null
 
-    //updated per draw
-    lateinit var actualSize: Size
-    lateinit var minSize: Size
-    /**
-     * Size that defined by the style or equal to minSize
-     */
-    lateinit var size: Size
+    override fun reflow(pos: PosXY, size: Size) = Unit
 
     fun update(style: S.() -> Unit) {
         this.style = createStyle().apply(style)
     }
 
+    open fun getSize(): Size {
+        val min = getMinimumSize()
+
+        return when (style.size) {
+            is DynamicSize -> with (style.size as DynamicSize) {
+                Env(min).get()
+            }
+            is Size -> {
+                style.size as Size
+            }
+        }
+    }
     /**
      * Minimum Size to fit content
      */
     abstract fun getMinimumSize(): Size
 
     /**
-     * Final size with padding, margin and others
-     */
-    open fun getMaximumSize() = size
-
-    /**
-     * Prepare for draw
-     */
-    open fun prepare() {
-        minSize = getMinimumSize()
-
-        when (style.size) {
-            is DynamicSize -> with (style.size as DynamicSize) {
-                size = Env(minSize).get()
-                actualSize = getMaximumSize()
-            }
-            is Size -> {
-                size = minSize
-                actualSize = style.size as Size
-            }
-        }
-    }
-
-    /**
      * Called after component re-rendering
      */
     open fun invalidate() {}
-
-    abstract fun draw(stack: DrawStack, mouse: PosXY, size: Size = actualSize)
 }
