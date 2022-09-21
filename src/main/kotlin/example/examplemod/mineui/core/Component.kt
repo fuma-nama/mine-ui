@@ -84,11 +84,11 @@ open class Component(
         }
     }
 
-    fun draw(stack: DrawStack, mouseX: Int, mouseY: Int, size: Size? = null) {
+    fun draw(stack: DrawStack, size: Size? = null) {
         val element = this.element?: error("Missing UI element linked to component")
 
-        element.prepare()
-        element.draw(stack, PosXY(mouseX, mouseY), size?: element.actualSize)
+        element.reflowNode(PosXY(0, 0), size?: element.getSize())
+        element.drawNode(stack)
     }
 
     inline fun<reified T> use(key: HookKey): T? {

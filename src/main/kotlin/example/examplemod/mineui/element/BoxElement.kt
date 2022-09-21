@@ -30,31 +30,44 @@ open class BoxStyle: StyleContext(), BoxBuilder {
 abstract class BoxElement<S: BoxStyle>(create: () -> S): UIElement<S>(create) {
     abstract fun getContentSize(): Size
 
-    override fun getMinimumSize() = getContentSize()
-    override fun getMaximumSize(): Size {
+    override fun reflow(pos: PosXY, size: Size) {
+        val padding = style.padding
+
+        val inner = Size(
+            width = size.width - padding.px,
+            height = size.height - padding.py
+        )
+
+        reflowContent(pos, PosXY(padding.left, padding.right), inner)
+    }
+
+    /**
+     * @param size Size of content
+     */
+    open fun reflowContent(pos: PosXY, padding: PosXY, size: Size) = Unit
+
+    override fun getMinimumSize(): Size {
+        val content = getContentSize()
+
         return Size(
-            width = size.width + style.padding.px,
-            height = size.height + style.padding.py
+            width = content.width + style.padding.px,
+            height = content.height + style.padding.py
         )
     }
 
-    override fun draw(stack: DrawStack, mouse: PosXY, size: Size) {
-        val before = stack.translated
+    override fun draw(stack: DrawStack, size: Size) {
         with (style) {
             if (background != null) {
                 stack.fillRect(0, 0, size.width, size.height, background!!)
             }
-
-            stack.translate(padding.left, padding.top)
+            stack.translate(PosXY(padding.left, padding.right))
         }
 
-        drawContent(stack, mouse, Size(
+        drawContent(stack, Size(
             size.width - style.padding.px,
             size.height - style.padding.py
         ))
-
-        stack.translated = before
     }
 
-    abstract fun drawContent(stack: DrawStack, mouse: PosXY, size: Size)
+    open fun drawContent(stack: DrawStack, size: Size) = Unit
 }

@@ -15,15 +15,7 @@ open class ContainerStyle : BoxStyle() {
 }
 
 abstract class Container<S: ContainerStyle>(create: () -> S) : BoxElement<S>(create) {
-    var children: ArrayList<UIElement<*>> = arrayListOf()
-
-    override fun prepare() {
-        children.forEach { child ->
-            child.prepare()
-        }
-
-        super.prepare()
-    }
+    override val children: ArrayList<UIElement<*>> = arrayListOf()
 
     override fun invalidate() {
         children.clear()
