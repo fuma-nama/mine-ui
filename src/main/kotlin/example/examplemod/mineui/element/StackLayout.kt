@@ -2,10 +2,17 @@ package example.examplemod.mineui.element
 
 import example.examplemod.mineui.PosXY
 import example.examplemod.mineui.utils.Size
-import example.examplemod.mineui.wrapper.DrawStack
 
 enum class Align {
-    Start, Center, End
+    Start, Center, End;
+
+    fun getPosition(container: Int, content: Int): Int {
+        return when (this) {
+            Start -> 0
+            Center -> (container / 2) - (content / 2)
+            End -> container - content
+        }.coerceAtLeast(0)
+    }
 }
 
 class StackStyle : ContainerStyle() {
@@ -23,34 +30,49 @@ class StackLayout : Container<StackStyle>(::StackStyle) {
                 w += style.gap
             }
 
-            val size = child.actualSize
+            val size = child.getSize()
+
             w += size.width
-            maxH = maxH.coerceAtLeast(size.height)
+            maxH = size.height.coerceAtLeast(maxH)
         }
 
         return Size(width = w, height = maxH)
     }
 
-    override fun drawContent(stack: DrawStack, mouse: PosXY, size: Size) {
-        val x = when (style.align) {
-            Align.Start -> 0
-            Align.Center -> (size.width / 2) - (minSize.width / 2)
-            Align.End -> size.width - minSize.width
-        }
+    override fun reflowContent(pos: PosXY, padding: PosXY, size: Size) {
+        val offset = pos + padding
+        val content = getContentSize()
 
-        val y = when (style.justify) {
-            Align.Start -> 0
-            Align.Center -> (size.height / 2) - (minSize.height / 2)
-            Align.End -> size.height - minSize.height
-        }
+        var left = 0
 
-        stack.translate(x.coerceAtLeast(0), y.coerceAtLeast(0))
+        println("container ${size.width} content ${content.width}")
+        val x = style.align.getPosition(size.width, content.width)
+        val y = style.justify.getPosition(size.height, content.height)
 
         for (child in children) {
-            child.draw(stack, mouse)
-            val add = child.actualSize.width + style.gap
+            val childSize = child.getSize()
 
-            stack.translate(add)
+            child.reflowNode(
+                offset + PosXY(x + left, y),
+                childSize
+            )
+
+            left += childSize.width + style.gap
         }
     }
 }
+/*
+content size 56
+content size 66
+content size 52
+content size 58
+content size 412
+container 417 content 468
+content size 66
+content size 52
+content size 58
+container 392 content 186
+draw 417
+draw 56
+draw 412
+ */

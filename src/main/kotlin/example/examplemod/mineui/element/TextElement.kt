@@ -1,6 +1,5 @@
 package example.examplemod.mineui.element
 
-import example.examplemod.mineui.PosXY
 import example.examplemod.mineui.utils.Size
 import example.examplemod.mineui.wrapper.DrawStack
 import net.minecraft.client.Minecraft
@@ -54,7 +53,7 @@ class TextElement : UIElement<LabelStyle>(::LabelStyle) {
         )
     }
 
-    override fun draw(stack: DrawStack, mouse: PosXY, size: Size) {
+    override fun draw(stack: DrawStack, size: Size) {
         with (style) {
             stack.drawText(font, content(), 0F, 0F, color)
         }
