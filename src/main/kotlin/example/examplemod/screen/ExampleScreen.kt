@@ -1,11 +1,14 @@
 package example.examplemod.screen
 
 import com.mojang.blaze3d.vertex.PoseStack
-import example.examplemod.mineui.*
+import example.examplemod.mineui.UI
+import example.examplemod.mineui.component
 import example.examplemod.mineui.element.Align
 import example.examplemod.mineui.hooks.createContext
 import example.examplemod.mineui.hooks.useContext
 import example.examplemod.mineui.hooks.useState
+import example.examplemod.mineui.label
+import example.examplemod.mineui.stack
 import example.examplemod.mineui.utils.Size
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
@@ -54,7 +57,6 @@ fun example(width: Int, height: Int) = component(width, height) {
         test(0)
     }
 
-    button({ bold() }) { "Click Me" }
     stack({
         size {
              Size(content.width * 2, content.height)
@@ -67,12 +69,9 @@ fun example(width: Int, height: Int) = component(width, height) {
         padding(10); gap = 5
         background = Color.BLACK
     }) {
-        label({
-            bold()
-            italic()
-        }) { "Hello World" }
+        label({ bold(); italic() }) { "Hello World" }
 
         label { "Hello Kane" }
-        label { "Hello MONEY" }
+        label { "a" }
     }
 }
