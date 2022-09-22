@@ -38,8 +38,6 @@ abstract class BoxElement<S: BoxStyle>(create: () -> S): UIElement<S>(create) {
             height = size.height - padding.py
         )
 
-        println("reflow $size $inner")
-
         reflowContent(pos, PosXY(padding.left, padding.right), inner)
     }
 
@@ -58,7 +56,6 @@ abstract class BoxElement<S: BoxStyle>(create: () -> S): UIElement<S>(create) {
     }
 
     override fun draw(stack: DrawStack, size: Size) {
-        println("draw $absoluteSize $size")
         with (style) {
             if (background != null) {
                 stack.fillRect(0, 0, size.width, size.height, background!!)

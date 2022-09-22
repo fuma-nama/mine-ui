@@ -18,12 +18,17 @@ enum class Align {
 class StackStyle : ContainerStyle() {
     var align: Align = Align.Start
     var justify: Align = Align.Start
+    var direction: Direction = Direction.Row
+}
+
+enum class Direction {
+    Column, Row
 }
 
 class StackLayout : Container<StackStyle>(::StackStyle) {
     override fun getContentSize(): Size {
         var w = 0
-        var maxH = 0
+        var h = 0
 
         for ((i, child) in children.withIndex()) {
             if (i != 0) {
@@ -32,32 +37,40 @@ class StackLayout : Container<StackStyle>(::StackStyle) {
 
             val size = child.getSize()
 
-            w += size.width
-            maxH = size.height.coerceAtLeast(maxH)
+            when (style.direction) {
+                Direction.Row -> {
+                    w =  size.width.coerceAtLeast(w)
+                    h += size.height
+                }
+                Direction.Column -> {
+                    w += size.width
+                    h = size.height.coerceAtLeast(h)
+                }
+            }
         }
 
-        return Size(width = w, height = maxH)
+        return Size(width = w, height = h)
     }
 
     override fun reflowContent(pos: PosXY, padding: PosXY, size: Size) {
         val offset = pos + padding
-        val content = getContentSize()
-
         var left = 0
-
-        println("container ${size.width} content ${content.width}")
-        val x = style.align.getPosition(size.width, content.width)
-        val y = style.justify.getPosition(size.height, content.height)
+        var top = 0
 
         for (child in children) {
-            val childSize = child.getSize()
+            val content = child.getSize()
+            val x = style.align.getPosition(size.width, content.width)
+            val y = style.justify.getPosition(size.height, content.height)
 
             child.reflowNode(
-                offset + PosXY(x + left, y),
-                childSize
+                offset + PosXY(x + left, y + top),
+                content
             )
 
-            left += childSize.width + style.gap
+            when (style.direction) {
+                Direction.Row -> top += content.height + style.gap
+                Direction.Column -> left += content.width + style.gap
+            }
         }
     }
 }
