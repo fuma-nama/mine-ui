@@ -3,6 +3,7 @@ package example.examplemod.screen
 import com.mojang.blaze3d.vertex.PoseStack
 import example.examplemod.mineui.*
 import example.examplemod.mineui.element.Align
+import example.examplemod.mineui.element.Direction
 import example.examplemod.mineui.element.StackLayout
 import example.examplemod.mineui.hooks.createContext
 import example.examplemod.mineui.hooks.useContext
@@ -18,19 +19,13 @@ class Theme(
 
 val ThemeContext = createContext<Theme>()
 
-var a: Int = 0
-
 class ExampleGUI(p_96550_: Component) : Screen(p_96550_) {
-    lateinit var root: UI
+    val root: UI = example()
 
     override fun init() {
         super.init()
-        if (a > 3) {
-            a = 0
-        }
-        a++
 
-        root = example(width, height)
+        root.updateSize(width, height)
     }
 
     override fun mouseClicked(x: Double, y: Double, type: Int): Boolean {
@@ -50,7 +45,9 @@ fun example.examplemod.mineui.core.Component.test(key: Any) = child(key) {
     println("$key $state ${theme?.text}")
 }
 
-fun example(width: Int, height: Int) = component {
+fun example() = component {
+    var direction by useState { Direction.Row }
+
     element(::StackLayout) {
         background = Color.RED
         padding(4)
@@ -62,6 +59,15 @@ fun example(width: Int, height: Int) = component {
 
     button({
         bold()
+
+        click { x: Double, y: Double, type: Int ->
+            direction = when (direction) {
+                Direction.Row -> Direction.Column
+                Direction.Column -> Direction.Row
+            }
+
+            true
+        }
     }) { "Click Me" }
     label { "Hello MONEY" }
 
@@ -69,13 +75,10 @@ fun example(width: Int, height: Int) = component {
         size {
              Size(content.width * 2, content.height)
         }
-        align = when (a) {
-            1 -> Align.Start
-            2 -> Align.Center
-            else -> Align.End
-        }
+        align = Align.Center
         padding(10); gap = 5
         background = Color.BLACK
+        this.direction = direction
     }) {
         label({ bold(); italic() }) { "Hello World" }
 
