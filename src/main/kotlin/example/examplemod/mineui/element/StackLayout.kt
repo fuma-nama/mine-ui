@@ -18,7 +18,7 @@ enum class Align {
 class StackStyle : ContainerStyle() {
     var align: Align = Align.Start
     var justify: Align = Align.Start
-    var direction: Direction = Direction.Row
+    var direction: Direction = Direction.Column
 }
 
 enum class Direction {
@@ -26,25 +26,21 @@ enum class Direction {
 }
 
 class StackLayout : Container<StackStyle>(::StackStyle) {
-    override fun getContentSize(): Size {
+    fun contentSize(children: List<Size>): Size {
         var w = 0
         var h = 0
 
-        for ((i, child) in children.withIndex()) {
-            if (i != 0) {
-                w += style.gap
-            }
-
-            val size = child.getSize()
+        for ((i, size) in children.withIndex()) {
+            val gap = if (i != 0) style.gap else 0
 
             when (style.direction) {
                 Direction.Row -> {
-                    w =  size.width.coerceAtLeast(w)
-                    h += size.height
+                    w += size.width + gap
+                    h = size.height.coerceAtLeast(h)
                 }
                 Direction.Column -> {
-                    w += size.width
-                    h = size.height.coerceAtLeast(h)
+                    w = size.width.coerceAtLeast(w)
+                    h += size.height + gap
                 }
             }
         }
@@ -52,40 +48,50 @@ class StackLayout : Container<StackStyle>(::StackStyle) {
         return Size(width = w, height = h)
     }
 
-    override fun reflowContent(pos: PosXY, padding: PosXY, size: Size) {
-        val offset = pos + padding
-        var left = 0
-        var top = 0
+    override fun getContentSize(): Size {
+        return contentSize(children.map { it.getSize() })
+    }
 
-        for (child in children) {
-            val content = child.getSize()
-            val x = style.align.getPosition(size.width, content.width)
-            val y = style.justify.getPosition(size.height, content.height)
+    fun reflowRow(offset: PosXY, size: Size, sizes: List<Size>) {
+        val content = contentSize(sizes)
+        var left = 0
+        val offsetX = style.align.getPosition(size.width, content.width)
+
+        for ((i, child) in children.withIndex()) {
+            val y = style.justify.getPosition(size.height, sizes[i].height)
 
             child.reflowNode(
-                offset + PosXY(x + left, y + top),
-                content
+                offset + PosXY(offsetX + left, y),
+                sizes[i]
             )
 
-            when (style.direction) {
-                Direction.Row -> top += content.height + style.gap
-                Direction.Column -> left += content.width + style.gap
-            }
+            left += sizes[i].width + style.gap
+        }
+    }
+
+    fun reflowColumn(offset: PosXY, size: Size, sizes: List<Size>) {
+        val content = contentSize(sizes)
+        var top = 0
+        val offsetY = style.justify.getPosition(size.height, content.height)
+
+        for ((i, child) in children.withIndex()) {
+            val x = style.align.getPosition(size.width, sizes[i].width)
+
+            child.reflowNode(
+                offset + PosXY(x, offsetY + top),
+                sizes[i]
+            )
+
+            top += sizes[i].height + style.gap
+        }
+    }
+
+    override fun reflowContent(pos: PosXY, padding: PosXY, size: Size) {
+        val sizes = children.map { it.getSize() }
+
+        when (style.direction) {
+            Direction.Row -> reflowRow(pos + padding, size, sizes)
+            Direction.Column -> reflowColumn(pos + padding, size, sizes)
         }
     }
 }
-/*
-content size 56
-content size 66
-content size 52
-content size 58
-content size 412
-container 417 content 468
-content size 66
-content size 52
-content size 58
-container 392 content 186
-draw 417
-draw 56
-draw 412
- */
