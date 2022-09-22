@@ -27,7 +27,10 @@ open class DrawStackDefault(val base: PoseStack): DrawStack {
     }
 
     override fun fillRect(x: Int, y: Int, width: Int, height: Int, color: Int) {
-        Gui.fill(base, translated.x + x, translated.y + y, width, height, color)
+        val ox = translated.x + x
+        val oy = translated.y + y
+
+        Gui.fill(base, ox, oy, ox + width, oy + height, color)
     }
 }
 
