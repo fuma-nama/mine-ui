@@ -2,13 +2,11 @@ package example.examplemod.mineui.core
 
 import example.examplemod.mineui.DslBuilder
 import example.examplemod.mineui.HookKey
-import example.examplemod.mineui.PosXY
 import example.examplemod.mineui.UI
 import example.examplemod.mineui.element.Container
 import example.examplemod.mineui.element.StyleContext
 import example.examplemod.mineui.element.UIElement
 import example.examplemod.mineui.hooks.Context
-import example.examplemod.mineui.utils.Size
 import example.examplemod.mineui.utils.extractChildren
 import example.examplemod.mineui.wrapper.DrawStack
 
@@ -34,8 +32,14 @@ open class Component(
         return current
     }
 
+    /**
+     * We need to reflow all elements from root
+     *
+     * since we don't know how many elements will be affected in the update
+     */
     fun update() {
         render()
+        ui.reflow()
     }
 
     fun render(): Component {
@@ -84,10 +88,9 @@ open class Component(
         }
     }
 
-    fun draw(stack: DrawStack, size: Size? = null) {
+    fun draw(stack: DrawStack) {
         val element = this.element?: error("Missing UI element linked to component")
 
-        element.reflowNode(PosXY(0, 0), size?: element.getSize())
         element.drawNode(stack)
     }
 

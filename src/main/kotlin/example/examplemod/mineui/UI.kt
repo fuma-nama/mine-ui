@@ -25,14 +25,23 @@ class UI(var size: Size? = null, render: Component.() -> Unit) {
     init {
         root.ui = this
         root.render()
+        reflow()
     }
 
     fun updateSize(w: Int, h: Int) {
         size = Size(w, h)
+        reflow()
+    }
+
+    fun reflow() {
+        val root = root.element
+        root?.let {
+            it.reflowNode(PosXY(0, 0), size?: it.getSize())
+        }
     }
 
     fun draw(stack: PoseStack, mouseX: Int, mouseY: Int) {
-        root.draw(DrawStackDefault(stack), size)
+        root.draw(DrawStackDefault(stack))
     }
 
     fun onClick(x: Double, y: Double, type: Int): Boolean {
