@@ -33,23 +33,27 @@ fun Component.useEffect(vararg dependencies: Any?, call: () -> Unit) {
     hooks[key] = dependencies
 }
 
-inline fun<reified V> Component.useState(noinline initial: () -> V) = useState(initial::class, initial())
+inline fun<reified V> Component.useState(noinline initial: () -> V) = useState(initial::class, initial)
 
-inline fun<reified V> Component.useState(id: Any, initial: V): State<V> {
+inline fun<reified V> Component.useState(id: Any, crossinline initial: () -> V): State<V> {
     val key = HookKey("useState", id)
-    val value = use(key) { initial }
 
-    return State(value, this)
+    return object : State<V>() {
+        override var value: V
+            get() = use(key, initial)
+            set(value) {
+                hooks[key] = value
+                this@useState.update()
+            }
+    }
 }
 
-class State<V>(var value: V, val context: Component) {
+abstract class State<V> {
+    abstract var value: V
+
     fun update(value: V) {
         this.value = value
-        context.update()
     }
-
-    operator fun component1() = value
-    operator fun component2() = ::update
 
     operator fun<P> getValue(parent: P, property: KProperty<*>): V {
         return value
