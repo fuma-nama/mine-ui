@@ -3,9 +3,10 @@ package example.examplemod.mineui.element
 import example.examplemod.mineui.PosXY
 import example.examplemod.mineui.core.RenderNode
 import example.examplemod.mineui.utils.*
+import example.examplemod.mineui.wrapper.GuiListenerBuilder
 import net.minecraft.client.gui.components.events.GuiEventListener
 
-open class StyleContext {
+open class StyleContext: GuiListenerBuilder() {
     var size: SizeInput = FitContent
 
     fun size(size: Env.() -> Size) {
@@ -21,6 +22,7 @@ abstract class UIElement<S: StyleContext>(val createStyle: () -> S): RenderNode(
 
     fun update(style: S.() -> Unit) {
         this.style = createStyle().apply(style)
+        this.listener = this.style.buildListener()
     }
 
     open fun getSize(): Size {

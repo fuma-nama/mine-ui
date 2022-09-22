@@ -4,7 +4,6 @@ import example.examplemod.mineui.utils.Size
 import example.examplemod.mineui.wrapper.DrawStack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Font
-import net.minecraft.client.gui.components.events.GuiEventListener
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import java.awt.Color
@@ -19,14 +18,6 @@ class ButtonStyle : BoxStyle(), LabelBuilder {
 
 class ButtonElement : BoxElement<ButtonStyle>(::ButtonStyle) {
     val content = Component.empty()
-    init {
-        listener = object : GuiEventListener {
-            override fun mouseClicked(p_94737_: Double, p_94738_: Double, p_94739_: Int): Boolean {
-                println("clicked")
-                return super.mouseClicked(p_94737_, p_94738_, p_94739_)
-            }
-        }
-    }
 
     fun setText(s: String) {
         content.siblings.clear()

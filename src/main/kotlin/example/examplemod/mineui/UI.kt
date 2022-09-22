@@ -19,7 +19,7 @@ data class PosXY(
     }
 }
 
-class UI(val size: Size? = null, render: Component.() -> Unit) {
+class UI(var size: Size? = null, render: Component.() -> Unit) {
     val root = Component(this, render, element = StackLayout())
 
     init {
@@ -27,12 +27,15 @@ class UI(val size: Size? = null, render: Component.() -> Unit) {
         root.render()
     }
 
+    fun updateSize(w: Int, h: Int) {
+        size = Size(w, h)
+    }
+
     fun draw(stack: PoseStack, mouseX: Int, mouseY: Int) {
         root.draw(DrawStackDefault(stack), size)
     }
 
     fun onClick(x: Double, y: Double, type: Int): Boolean {
-        println("$x, $y")
         fireEvent(
             this.root.element!!,
             { element ->
@@ -57,7 +60,7 @@ class UI(val size: Size? = null, render: Component.() -> Unit) {
         }
 
         if (element is Container<*>) {
-            for (child in element.children) {
+            for (child in element.children.toList()) {
                 fireEvent(child, filter, action)
             }
         }
