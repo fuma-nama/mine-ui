@@ -1,12 +1,8 @@
 package example.examplemod.mineui
 
 import example.examplemod.mineui.core.Component
-import example.examplemod.mineui.element.ButtonElement
-import example.examplemod.mineui.element.ButtonStyle
-import example.examplemod.mineui.element.LabelStyle
-import example.examplemod.mineui.element.TextElement
-import example.examplemod.mineui.element.layout.StackLayout
-import example.examplemod.mineui.element.layout.StackStyle
+import example.examplemod.mineui.element.*
+import example.examplemod.mineui.element.layout.*
 
 fun Component.label(style: LabelStyle.() -> Unit = {}, text: () -> String) = label(text::class, style, text)
 
@@ -30,4 +26,23 @@ fun Component.stack(
     element(::StackLayout, style)
 
     children(this) //render children
+}
+
+
+fun Component.simpleGrid(style: SimpleGridLayoutStyle.() -> Unit, children: Component.() -> Unit) =
+    simpleGrid(children::class, style, children)
+
+fun Component.simpleGrid(key: Any, style: SimpleGridLayoutStyle.() -> Unit, children: Component.() -> Unit) = child(key) {
+    element(::SimpleGridLayout, style)
+
+    children(this)
+}
+
+fun Component.box(style: ContainerStyle.() -> Unit, children: Component.() -> Unit) =
+    box(children::class, style, children)
+
+fun Component.box(key: Any, style: ContainerStyle.() -> Unit, children: Component.() -> Unit) = child(key) {
+    element(::BoxElementImpl, style)
+
+    children(this)
 }

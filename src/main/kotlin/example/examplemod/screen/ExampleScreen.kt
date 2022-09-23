@@ -47,11 +47,12 @@ fun example.examplemod.mineui.core.Component.test(key: Any) = child(key) {
 
 fun example() = component {
     var direction by useState { Direction.Row }
+    var toggle by useState { false }
+
     element(::StackLayout) {
         background = Color.RED
         padding(4)
     }
-
 
     ThemeContext.provider(Theme("Hello World")) {
         test(0)
@@ -70,6 +71,21 @@ fun example() = component {
         }
     }) { "Click Me" }
     label { "Hello MONEY" }
+    simpleGrid({ columns(1, 1, 2); spacing(4) }) {
+        box({
+            background = Color.BLUE
+            click { x, y, type ->
+                toggle = !toggle
+                true
+            }
+        }) {
+            label { "Hello Kane" }
+        }
+        box({ background = Color.BLUE }) {
+            label { if (toggle) "Hello World, I am Gay" else "MONEY" }
+        }
+        box({ background = Color.GREEN; size(30, 50) }) {}
+    }
 
     stack({
         size {
