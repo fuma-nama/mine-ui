@@ -9,6 +9,10 @@ import net.minecraft.client.gui.components.events.GuiEventListener
 open class StyleContext: GuiListenerBuilder() {
     var size: SizeInput = FitContent
 
+    fun size(width: Int, height: Int) {
+        size = Size(width, height)
+    }
+
     fun size(size: Env.() -> Size) {
         this.size = DynamicSize { size() }
     }
