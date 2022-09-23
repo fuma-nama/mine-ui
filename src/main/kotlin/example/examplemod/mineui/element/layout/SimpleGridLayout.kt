@@ -39,6 +39,9 @@ class SimpleGridLayoutStyle : ContainerStyle() {
     }
 }
 
+/**
+ * Simple Grid Layout Implementation
+ */
 class SimpleGridLayout : Container<SimpleGridLayoutStyle>(::SimpleGridLayoutStyle) {
     fun contentSize(children: List<Size>, frame: Size): Size {
         var w = 0
@@ -87,6 +90,9 @@ class SimpleGridLayout : Container<SimpleGridLayoutStyle>(::SimpleGridLayoutStyl
         return contentSize(sizes, getFrameSize(sizes))
     }
 
+    // calculates element size
+    // scale = size / (1 + 1 + 2)
+    // element size = columns[i] * scale
     override fun reflowContent(pos: PosXY, padding: PosXY, size: Size) {
         val offset = pos + padding
         val scale = size.width / style.columns.sum()
