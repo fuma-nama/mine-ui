@@ -1,6 +1,6 @@
 package example.examplemod.mineui.core
 
-import example.examplemod.mineui.PosXY
+import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.utils.Size
 import example.examplemod.mineui.wrapper.DrawStack
 

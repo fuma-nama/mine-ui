@@ -2,12 +2,12 @@ package example.examplemod.screen
 
 import com.mojang.blaze3d.vertex.PoseStack
 import example.examplemod.mineui.*
-import example.examplemod.mineui.element.Align
-import example.examplemod.mineui.element.Direction
-import example.examplemod.mineui.element.StackLayout
+import example.examplemod.mineui.element.layout.StackLayout
 import example.examplemod.mineui.hooks.createContext
 import example.examplemod.mineui.hooks.useContext
 import example.examplemod.mineui.hooks.useState
+import example.examplemod.mineui.style.Align
+import example.examplemod.mineui.style.Direction
 import example.examplemod.mineui.utils.Size
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
@@ -47,11 +47,11 @@ fun example.examplemod.mineui.core.Component.test(key: Any) = child(key) {
 
 fun example() = component {
     var direction by useState { Direction.Row }
-
     element(::StackLayout) {
         background = Color.RED
         padding(4)
     }
+
 
     ThemeContext.provider(Theme("Hello World")) {
         test(0)

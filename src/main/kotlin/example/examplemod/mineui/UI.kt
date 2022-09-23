@@ -3,21 +3,11 @@ package example.examplemod.mineui
 import com.mojang.blaze3d.vertex.PoseStack
 import example.examplemod.mineui.core.Component
 import example.examplemod.mineui.element.Container
-import example.examplemod.mineui.element.StackLayout
 import example.examplemod.mineui.element.UIElement
+import example.examplemod.mineui.element.layout.StackLayout
+import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.utils.Size
 import example.examplemod.mineui.wrapper.DrawStackDefault
-
-data class PosXY(
-    val x: Int, val y: Int
-) {
-    operator fun plus(other: PosXY): PosXY {
-        return PosXY(
-            other.x + this.x,
-            other.y + this.y
-        )
-    }
-}
 
 class UI(var size: Size? = null, render: Component.() -> Unit) {
     val root = Component(this, render, element = StackLayout())

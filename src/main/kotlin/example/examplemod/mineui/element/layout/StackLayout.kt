@@ -1,28 +1,16 @@
-package example.examplemod.mineui.element
+package example.examplemod.mineui.element.layout
 
-import example.examplemod.mineui.PosXY
+import example.examplemod.mineui.element.Container
+import example.examplemod.mineui.element.ContainerStyle
+import example.examplemod.mineui.style.Align
+import example.examplemod.mineui.style.Direction
+import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.utils.Size
-
-enum class Align {
-    Start, Center, End;
-
-    fun getPosition(container: Int, content: Int): Int {
-        return when (this) {
-            Start -> 0
-            Center -> (container / 2) - (content / 2)
-            End -> container - content
-        }.coerceAtLeast(0)
-    }
-}
 
 class StackStyle : ContainerStyle() {
     var align: Align = Align.Start
     var justify: Align = Align.Start
     var direction: Direction = Direction.Column
-}
-
-enum class Direction {
-    Column, Row
 }
 
 class StackLayout : Container<StackStyle>(::StackStyle) {

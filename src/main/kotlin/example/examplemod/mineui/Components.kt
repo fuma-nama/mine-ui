@@ -1,7 +1,12 @@
 package example.examplemod.mineui
 
 import example.examplemod.mineui.core.Component
-import example.examplemod.mineui.element.*
+import example.examplemod.mineui.element.ButtonElement
+import example.examplemod.mineui.element.ButtonStyle
+import example.examplemod.mineui.element.LabelStyle
+import example.examplemod.mineui.element.TextElement
+import example.examplemod.mineui.element.layout.StackLayout
+import example.examplemod.mineui.element.layout.StackStyle
 
 fun Component.label(style: LabelStyle.() -> Unit = {}, text: () -> String) = label(text::class, style, text)
 

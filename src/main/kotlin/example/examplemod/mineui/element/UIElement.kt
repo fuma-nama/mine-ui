@@ -1,7 +1,7 @@
 package example.examplemod.mineui.element
 
-import example.examplemod.mineui.PosXY
 import example.examplemod.mineui.core.RenderNode
+import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.utils.*
 import example.examplemod.mineui.wrapper.GuiListenerBuilder
 import net.minecraft.client.gui.components.events.GuiEventListener

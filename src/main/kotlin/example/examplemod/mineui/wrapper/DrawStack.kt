@@ -1,7 +1,7 @@
 package example.examplemod.mineui.wrapper
 
 import com.mojang.blaze3d.vertex.PoseStack
-import example.examplemod.mineui.PosXY
+import example.examplemod.mineui.style.PosXY
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.Gui
 import net.minecraft.network.chat.Component
@@ -9,14 +9,6 @@ import java.awt.Color
 
 open class DrawStackDefault(val base: PoseStack): DrawStack {
     override var translated: PosXY = PosXY(0, 0)
-    set(v) {
-
-        if (v.x < 0) {
-            error("It is less than 0! $v")
-        }
-
-        field = v
-    }
 
     override fun drawText(font: Font, text: String, x: Float, y: Float, color: Int) {
         font.draw(base, text, translated.x + x, translated.y + y, color)

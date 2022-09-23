@@ -1,6 +1,7 @@
 package example.examplemod.mineui.element
 
-import example.examplemod.mineui.PosXY
+import example.examplemod.mineui.style.Point4
+import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.utils.Size
 import example.examplemod.mineui.wrapper.DrawStack
 import java.awt.Color
