@@ -11,6 +11,7 @@ class StackStyle : ContainerStyle() {
     var align: Align = Align.Start
     var justify: Align = Align.Start
     var direction: Direction = Direction.Column
+    var gap: Int = 0
 }
 
 class StackLayout : Container<StackStyle>(::StackStyle) {
