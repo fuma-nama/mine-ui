@@ -5,11 +5,15 @@ import example.examplemod.mineui.element.ContainerStyle
 import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.utils.Size
 
-class BoxElementImpl : Container<ContainerStyle>(::ContainerStyle) {
+class BoxLayout : Container<ContainerStyle>(::ContainerStyle) {
 
     override fun getContentSize(): Size {
-        val child = children.firstOrNull()
-        return child?.getSize()?: Size(0, 0)
+        var min = Size(0, 0)
+        for (child in children) {
+            min = min.combineMax(child.getSize())
+        }
+
+        return min
     }
 
     override fun reflowContent(pos: PosXY, padding: PosXY, size: Size) {
