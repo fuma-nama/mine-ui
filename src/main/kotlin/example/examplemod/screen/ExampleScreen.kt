@@ -2,6 +2,7 @@ package example.examplemod.screen
 
 import com.mojang.blaze3d.vertex.PoseStack
 import example.examplemod.mineui.*
+import example.examplemod.mineui.core.UI
 import example.examplemod.mineui.element.layout.StackLayout
 import example.examplemod.mineui.hooks.createContext
 import example.examplemod.mineui.hooks.useContext
@@ -53,6 +54,7 @@ fun example() = component {
     element(::StackLayout) {
         background = Color.RED
         padding(4)
+        gap = 5
     }
 
     ThemeContext.provider(Theme("Hello World")) {
@@ -89,13 +91,17 @@ fun example() = component {
     }
 
     stack({ align(horizontal = HorizontalAlign.Fill) }) {
-        box({
-            background = Color.BLUE
-            click { x, y, type ->
-                toggle = !toggle
-                true
-            }
-        }) {
+        box({ background = Color.BLUE }) {
+            label { "Hello Kane" }
+        }
+        box({ background = Color.BLUE }) {
+            label { if (toggle) "Hello World, I am Gay" else "MONEY" }
+        }
+        box({ background = Color.GREEN; size(30, 50) }) {}
+    }
+
+    column({gap = 5}) {
+        box({ background = Color.BLUE }) {
             label { "Hello Kane" }
         }
         box({ background = Color.BLUE }) {

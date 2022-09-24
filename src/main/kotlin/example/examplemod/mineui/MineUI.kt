@@ -1,6 +1,7 @@
 package example.examplemod.mineui
 
 import example.examplemod.mineui.core.Component
+import example.examplemod.mineui.core.UI
 import example.examplemod.mineui.utils.Size
 
 @DslMarker

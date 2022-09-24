@@ -29,20 +29,38 @@ fun Component.stack(
 }
 
 
-fun Component.simpleGrid(style: SimpleGridLayoutStyle.() -> Unit, children: Component.() -> Unit) =
+fun Component.simpleGrid(style: SimpleGridLayoutStyle.() -> Unit = {}, children: Component.() -> Unit) =
     simpleGrid(children::class, style, children)
 
-fun Component.simpleGrid(key: Any, style: SimpleGridLayoutStyle.() -> Unit, children: Component.() -> Unit) = child(key) {
+fun Component.simpleGrid(key: Any, style: SimpleGridLayoutStyle.() -> Unit = {}, children: Component.() -> Unit) = child(key) {
     element(::SimpleGridLayout, style)
 
     children(this)
 }
 
-fun Component.box(style: ContainerStyle.() -> Unit, children: Component.() -> Unit) =
+fun Component.box(style: ContainerStyle.() -> Unit = {}, children: Component.() -> Unit) =
     box(children::class, style, children)
 
-fun Component.box(key: Any, style: ContainerStyle.() -> Unit, children: Component.() -> Unit) = child(key) {
+fun Component.box(key: Any, style: ContainerStyle.() -> Unit = {}, children: Component.() -> Unit) = child(key) {
     element(::BoxLayout, style)
+
+    children(this)
+}
+
+fun Component.column(style: ColumnStyle.() -> Unit = {}, children: Component.() -> Unit) =
+    column(children::class, style, children)
+
+fun Component.column(key: Any, style: ColumnStyle.() -> Unit = {}, children: Component.() -> Unit) = child(key) {
+    element(::ColumnLayout, style)
+
+    children(this)
+}
+
+fun Component.row(style: RowStyle.() -> Unit = {}, children: Component.() -> Unit) =
+    row(children::class, style, children)
+
+fun Component.row(key: Any, style: RowStyle.() -> Unit = {}, children: Component.() -> Unit) = child(key) {
+    element(::RowLayout, style)
 
     children(this)
 }
