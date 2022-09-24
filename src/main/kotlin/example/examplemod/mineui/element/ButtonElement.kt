@@ -1,7 +1,6 @@
 package example.examplemod.mineui.element
 
 import example.examplemod.mineui.style.Point4
-import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.utils.Size
 import example.examplemod.mineui.wrapper.DrawStack
 import net.minecraft.client.Minecraft
@@ -21,10 +20,6 @@ class ButtonStyle : BoxStyle(), LabelBuilder {
 class ButtonElement : BoxElement<ButtonStyle>(::ButtonStyle) {
     val content = Component.empty()
 
-    override fun reflowContent(pos: PosXY, padding: PosXY, size: Size) {
-        super.reflowContent(pos, padding, size)
-        println("reflow")
-    }
     fun setText(s: String) {
         content.siblings.clear()
         content.append(s)
