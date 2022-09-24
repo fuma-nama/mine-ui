@@ -2,14 +2,28 @@ package example.examplemod.mineui.element.layout
 
 import example.examplemod.mineui.element.Container
 import example.examplemod.mineui.element.ContainerStyle
-import example.examplemod.mineui.style.Align
 import example.examplemod.mineui.style.Direction
+import example.examplemod.mineui.style.HorizontalAlign
 import example.examplemod.mineui.style.PosXY
+import example.examplemod.mineui.style.VerticalAlign
 import example.examplemod.mineui.utils.Size
 
 class StackStyle : ContainerStyle() {
-    var align: Align = Align.Start
-    var justify: Align = Align.Start
+    /**
+     * horizontal alignment
+     */
+    var alignX: HorizontalAlign = HorizontalAlign.Start
+
+    /**
+     * vertical alignment
+     */
+    var alignY: VerticalAlign = VerticalAlign.Start
+
+    fun align(horizontal: HorizontalAlign = alignX, vertical: VerticalAlign = alignY) {
+        alignX = horizontal
+        alignY = vertical
+    }
+
     var direction: Direction = Direction.Column
     var gap: Int = 0
 }
@@ -44,14 +58,15 @@ class StackLayout : Container<StackStyle>(::StackStyle) {
     fun reflowRow(offset: PosXY, size: Size, sizes: List<Size>) {
         val content = contentSize(sizes)
         var left = 0
-        val offsetX = style.align.getPosition(size.width, content.width)
+        val offsetX = style.alignX.getPosition(size, content)
 
         for ((i, child) in children.withIndex()) {
-            val y = style.justify.getPosition(size.height, sizes[i].height)
+            val rect = style.alignX.getSize(size, sizes[i])
+            val y = style.alignY.getPosition(rect.width, sizes[i].width)
 
             child.reflowNode(
                 offset + PosXY(offsetX + left, y),
-                sizes[i]
+                rect
             )
 
             left += sizes[i].width + style.gap
@@ -61,14 +76,15 @@ class StackLayout : Container<StackStyle>(::StackStyle) {
     fun reflowColumn(offset: PosXY, size: Size, sizes: List<Size>) {
         val content = contentSize(sizes)
         var top = 0
-        val offsetY = style.justify.getPosition(size.height, content.height)
+        val offsetY = style.alignY.getPosition(size.height, content.height)
 
         for ((i, child) in children.withIndex()) {
-            val x = style.align.getPosition(size.width, sizes[i].width)
+            val x = style.alignX.getPosition(size, sizes[i])
+            val rect = style.alignX.getSize(size, sizes[i])
 
             child.reflowNode(
                 offset + PosXY(x, offsetY + top),
-                sizes[i]
+                rect
             )
 
             top += sizes[i].height + style.gap

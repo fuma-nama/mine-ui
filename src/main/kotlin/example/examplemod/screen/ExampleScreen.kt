@@ -6,8 +6,9 @@ import example.examplemod.mineui.element.layout.StackLayout
 import example.examplemod.mineui.hooks.createContext
 import example.examplemod.mineui.hooks.useContext
 import example.examplemod.mineui.hooks.useState
-import example.examplemod.mineui.style.Align
 import example.examplemod.mineui.style.Direction
+import example.examplemod.mineui.style.HorizontalAlign
+import example.examplemod.mineui.style.VerticalAlign
 import example.examplemod.mineui.utils.Size
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
@@ -87,11 +88,27 @@ fun example() = component {
         box({ background = Color.GREEN; size(30, 50) }) {}
     }
 
+    stack({ align(horizontal = HorizontalAlign.Fill) }) {
+        box({
+            background = Color.BLUE
+            click { x, y, type ->
+                toggle = !toggle
+                true
+            }
+        }) {
+            label { "Hello Kane" }
+        }
+        box({ background = Color.BLUE }) {
+            label { if (toggle) "Hello World, I am Gay" else "MONEY" }
+        }
+        box({ background = Color.GREEN; size(30, 50) }) {}
+    }
+
     stack({
         size {
              Size(content.width * 2, content.height)
         }
-        align = Align.Center
+        alignY = VerticalAlign.Center
         padding(10); gap = 5
         background = Color.BLACK
         this.direction = direction
