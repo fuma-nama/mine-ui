@@ -4,6 +4,16 @@ data class Size(val width: Int, val height: Int): SizeInput {
     operator fun plus(other: Size): Size {
         return Size(width + other.width, height + other.height)
     }
+
+    /**
+     * Combine a new Size object with greatest size from two sizes
+     */
+    fun combineMax(other: Size): Size {
+        return Size(
+            other.width.coerceAtLeast(width),
+            other.height.coerceAtLeast(height)
+        )
+    }
 }
 
 object FitContent : DynamicSize {

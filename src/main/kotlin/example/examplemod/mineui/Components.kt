@@ -42,7 +42,7 @@ fun Component.box(style: ContainerStyle.() -> Unit, children: Component.() -> Un
     box(children::class, style, children)
 
 fun Component.box(key: Any, style: ContainerStyle.() -> Unit, children: Component.() -> Unit) = child(key) {
-    element(::BoxElementImpl, style)
+    element(::BoxLayout, style)
 
     children(this)
 }
