@@ -1,7 +1,6 @@
-package example.examplemod.mineui
+package example.examplemod.mineui.core
 
 import com.mojang.blaze3d.vertex.PoseStack
-import example.examplemod.mineui.core.Component
 import example.examplemod.mineui.element.Container
 import example.examplemod.mineui.element.UIElement
 import example.examplemod.mineui.element.layout.StackLayout

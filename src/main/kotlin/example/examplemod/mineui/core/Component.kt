@@ -1,8 +1,6 @@
 package example.examplemod.mineui.core
 
 import example.examplemod.mineui.DslBuilder
-import example.examplemod.mineui.HookKey
-import example.examplemod.mineui.UI
 import example.examplemod.mineui.element.Container
 import example.examplemod.mineui.element.StyleContext
 import example.examplemod.mineui.element.UIElement

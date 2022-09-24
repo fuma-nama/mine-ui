@@ -1,7 +1,7 @@
 package example.examplemod.mineui.hooks
 
-import example.examplemod.mineui.HookKey
 import example.examplemod.mineui.core.Component
+import example.examplemod.mineui.core.HookKey
 import kotlin.reflect.KProperty
 
 class MemoHook<V>(
