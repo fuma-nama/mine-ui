@@ -3,6 +3,7 @@ package example.examplemod.mineui.core
 import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.utils.Size
 import example.examplemod.mineui.wrapper.DrawStack
+import example.examplemod.mineui.wrapper.translate
 
 abstract class RenderNode {
     open val children: List<RenderNode> = emptyList()
@@ -14,12 +15,22 @@ abstract class RenderNode {
 
     fun drawNode(stack: DrawStack) {
         stack.translated = absolutePosition
-        draw(stack, size)
 
-        for (element in children) {
-            element.drawNode(stack)
+        stack.translate {
+            draw(stack, absoluteSize)
+
+            for (element in children) {
+                element.drawNode(stack)
+            }
         }
+
+        drawFilter(stack, absoluteSize)
     }
+
+    /**
+     * Things Drawn after its children
+     */
+    open fun drawFilter(stack: DrawStack, size: Size) = Unit
 
     fun reflowNode(pos: PosXY, size: Size) {
         this.position = pos
