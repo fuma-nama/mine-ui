@@ -100,14 +100,18 @@ fun example() = component {
         box({ background = Color.GREEN; size(30, 50) }) {}
     }
 
-    column({gap = 5}) {
-        box({ background = Color.BLUE }) {
-            label { "Hello Kane" }
+    mask({
+        maskColor = if (toggle) Color(255, 0, 0, 100) else null
+    }) {
+        column({gap = 5}) {
+            box({ background = Color.BLUE }) {
+                label { "Hello Kane" }
+            }
+            box({ background = Color.BLUE }) {
+                label { if (toggle) "Hello World, I am Gay" else "MONEY" }
+            }
+            box({ background = Color.GREEN; size(30, 50) }) {}
         }
-        box({ background = Color.BLUE }) {
-            label { if (toggle) "Hello World, I am Gay" else "MONEY" }
-        }
-        box({ background = Color.GREEN; size(30, 50) }) {}
     }
 
     stack({
@@ -121,7 +125,11 @@ fun example() = component {
     }) {
         label({ bold(); italic() }) { "Hello World" }
 
+        space { Size(10, 10) }
         label { "Hello Kane" }
-        label({position(0, 0)}) { "Wow" }
+
+        absolute({ position(0, 0) }) {
+            label { "Wow" }
+        }
     }
 }

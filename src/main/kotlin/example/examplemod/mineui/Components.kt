@@ -3,6 +3,7 @@ package example.examplemod.mineui
 import example.examplemod.mineui.core.Component
 import example.examplemod.mineui.element.*
 import example.examplemod.mineui.element.layout.*
+import example.examplemod.mineui.utils.Size
 
 fun Component.label(style: LabelStyle.() -> Unit = {}, text: () -> String) = label(text::class, style, text)
 
@@ -27,7 +28,6 @@ fun Component.stack(
 
     children(this) //render children
 }
-
 
 fun Component.simpleGrid(style: SimpleGridLayoutStyle.() -> Unit = {}, children: Component.() -> Unit) =
     simpleGrid(children::class, style, children)
@@ -61,6 +61,32 @@ fun Component.row(style: RowStyle.() -> Unit = {}, children: Component.() -> Uni
 
 fun Component.row(key: Any, style: RowStyle.() -> Unit = {}, children: Component.() -> Unit) = child(key) {
     element(::RowLayout, style)
+
+    children(this)
+}
+
+fun Component.mask(style: MaskLayoutStyle.() -> Unit = {}, children: Component.() -> Unit) =
+    mask(children::class, style, children)
+
+fun Component.mask(key: Any, style: MaskLayoutStyle.() -> Unit = {}, children: Component.() -> Unit) = child(key) {
+    element(::MaskLayout, style)
+
+    children(this)
+}
+
+fun Component.space(size: () -> Size) = space(size::class, size())
+
+fun Component.space(key: Any, size: Size) = child(key) {
+    element(::SpaceElement) {
+        this.size = size
+    }
+}
+
+fun Component.absolute(style: AbsoluteStyle.() -> Unit = {}, children: Component.() -> Unit) =
+    absolute(children::class, style, children)
+
+fun Component.absolute(key: Any, style: AbsoluteStyle.() -> Unit = {}, children: Component.() -> Unit) = child(key) {
+    element(::AbsoluteLayout, style)
 
     children(this)
 }
