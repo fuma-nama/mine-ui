@@ -14,6 +14,10 @@ data class Size(val width: Int, val height: Int): SizeInput {
             other.height.coerceAtLeast(height)
         )
     }
+
+    companion object {
+        val Empty = Size(0, 0)
+    }
 }
 
 object FitContent : DynamicSize {

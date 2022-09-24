@@ -8,7 +8,7 @@ import example.examplemod.mineui.utils.Size
 class BoxLayout : Container<ContainerStyle>(::ContainerStyle) {
 
     override fun getContentSize(): Size {
-        var min = Size(0, 0)
+        var min = Size.Empty
         for (child in children) {
             min = min.combineMax(child.getSize())
         }
