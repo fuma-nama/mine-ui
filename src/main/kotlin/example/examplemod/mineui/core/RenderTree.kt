@@ -9,11 +9,11 @@ abstract class RenderNode {
     private lateinit var position: PosXY
     private lateinit var size: Size
 
-    val absoluteSize by ::size
-    val absolutePosition by ::position
+    open val absolutePosition by ::position
+    open val absoluteSize by ::size
 
     fun drawNode(stack: DrawStack) {
-        stack.translated = position
+        stack.translated = absolutePosition
         draw(stack, size)
 
         for (element in children) {

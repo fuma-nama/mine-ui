@@ -1,12 +1,17 @@
 package example.examplemod.mineui.element
 
 import example.examplemod.mineui.core.RenderNode
+import example.examplemod.mineui.style.DynamicPosition
 import example.examplemod.mineui.style.PosXY
+import example.examplemod.mineui.style.PositionInput
+import example.examplemod.mineui.style.Relative
 import example.examplemod.mineui.utils.*
 import example.examplemod.mineui.wrapper.GuiListenerBuilder
 import net.minecraft.client.gui.components.events.GuiEventListener
 
 open class StyleContext: GuiListenerBuilder() {
+    var position: PositionInput = Relative
+
     var size: SizeInput = FitContent
 
     fun size(width: Int, height: Int) {
@@ -16,6 +21,14 @@ open class StyleContext: GuiListenerBuilder() {
     fun size(size: Env.() -> Size) {
         this.size = DynamicSize { size() }
     }
+
+    fun position(x: Int, y: Int) {
+        position = PosXY(x, y)
+    }
+
+    fun position(dynamic: (PosXY) -> PosXY) {
+        position = DynamicPosition { dynamic(it) }
+    }
 }
 
 abstract class UIElement<S: StyleContext>(val createStyle: () -> S): RenderNode() {
@@ -23,6 +36,14 @@ abstract class UIElement<S: StyleContext>(val createStyle: () -> S): RenderNode(
     var listener: GuiEventListener? = null
 
     override fun reflow(pos: PosXY, size: Size) = Unit
+
+    override val absolutePosition: PosXY
+        get() = when (style.position) {
+            is DynamicPosition -> (style.position as DynamicPosition).receive(
+                super.absolutePosition
+            )
+            is PosXY -> style.position as PosXY
+        }
 
     fun update(style: S.() -> Unit) {
         this.style = createStyle().apply(style)

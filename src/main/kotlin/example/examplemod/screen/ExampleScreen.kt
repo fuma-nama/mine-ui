@@ -122,6 +122,6 @@ fun example() = component {
         label({ bold(); italic() }) { "Hello World" }
 
         label { "Hello Kane" }
-        label { "a" }
+        label({position(0, 0)}) { "Wow" }
     }
 }
