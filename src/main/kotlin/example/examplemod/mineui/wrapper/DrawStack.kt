@@ -8,7 +8,6 @@ import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.Gui
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 open class DrawStackDefault(val base: PoseStack): DrawStack {
@@ -22,13 +21,11 @@ open class DrawStackDefault(val base: PoseStack): DrawStack {
         font.draw(base, text, translated.x + x, translated.y + y, color)
     }
 
-    override fun drawImage(x: Int, y: Int, offsetX: Int, offsetY: Int, width: Int?, height: Int?, containerW: Int?, containerH: Int?, image: ResourceLocation) {
+    override fun drawImage(x: Int, y: Int, offsetX: Int, offsetY: Int, width: Int, height: Int, containerW: Int, containerH: Int, image: ResourceLocation) {
         val texture = Minecraft.getInstance().textureManager.getTexture(image)
         texture.bind()
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, image)
-        val originalW = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_HEIGHT)
-        val originalH = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH)
 
         Gui.blit(base,
             translated.x + x,
@@ -36,8 +33,8 @@ open class DrawStackDefault(val base: PoseStack): DrawStack {
             0, //z offset
             offsetX.toFloat(),
             offsetY.toFloat(),
-            width?: originalW, height?: originalH,
-            containerW?: originalW, containerH?: originalH
+            width, height,
+            containerW, containerH
         )
     }
 
@@ -71,10 +68,10 @@ interface DrawStack {
 
     fun fillRect(x: Int, y: Int, width: Int, height: Int, color: Int)
 
-    fun drawImage(x: Int, y: Int, width: Int?, height: Int?, image: ResourceLocation) =
+    fun drawImage(x: Int, y: Int, width: Int, height: Int, image: ResourceLocation) =
         drawImage(x, y, 0, 0, width, height, width, height, image)
 
-    fun drawImage(x: Int, y: Int, offsetX: Int, offsetY: Int, width: Int?, height: Int?, containerW: Int?, containerH: Int?, image: ResourceLocation)
+    fun drawImage(x: Int, y: Int, offsetX: Int, offsetY: Int, width: Int, height: Int, containerW: Int, containerH: Int, image: ResourceLocation)
 }
 
 fun DrawStack.translate(render: () -> Unit) {

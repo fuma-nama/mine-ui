@@ -65,9 +65,9 @@ fun example() = component {
     ThemeContext.provider(Theme("Hello World")) {
         test(0)
     }
-    image { src = backgroundImage; width = 170; height = 170 }
-    image { src = backgroundImage; width = 170; height = 140; objectFit = ImageFit.Contain }
-    image { src = backgroundImage; width = 170; height = 140; objectFit = ImageFit.Cover }
+    image { src = backgroundImage; width = 170; height = 100 }
+    image { src = backgroundImage; width = 170; height = 100; objectFit = ImageFit.Contain }
+    image { src = backgroundImage; width = 170; height = 100; objectFit = ImageFit.Cover }
 
     button({
         bold()

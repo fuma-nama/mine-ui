@@ -12,7 +12,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener
 open class StyleContext: GuiListenerBuilder() {
     var position: PositionInput = Relative
 
-    var size: SizeInput = FitContent
+    open var size: SizeInput = FitContent
 
     fun size(width: Int, height: Int) {
         size = Size(width, height)

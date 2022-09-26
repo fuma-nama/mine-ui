@@ -26,9 +26,7 @@ class ImageElement : UIElement<ImageStyle>(::ImageStyle) {
         val src = style.src
 
         if (src != null) {
-            val img = style.objectFit.calcDrawSize(style.width, style.height, src)
-
-            stack.drawImage(0, 0, 0, 0, img.width, img.height, size.width, size.height, src)
+            stack.drawImage(style.objectFit, size, src)
         }
     }
 
