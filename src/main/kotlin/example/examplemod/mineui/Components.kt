@@ -90,3 +90,9 @@ fun Component.absolute(key: Any, style: AbsoluteStyle.() -> Unit = {}, children:
 
     children(this)
 }
+
+fun Component.image(style: ImageStyle.() -> Unit) = image(style::class, style)
+
+fun Component.image(key: Any, style: ImageStyle.() -> Unit) = child(key) {
+    element(::ImageElement, style)
+}
