@@ -1,14 +1,16 @@
 package example.examplemod.mineui.element
 
+import example.examplemod.mineui.style.ImageFit
 import example.examplemod.mineui.style.Point4
 import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.utils.Size
+import example.examplemod.mineui.utils.drawImage
 import example.examplemod.mineui.wrapper.DrawStack
+import net.minecraft.resources.ResourceLocation
 import java.awt.Color
 
 interface BoxBuilder {
     var padding: Point4
-    var background: Color?
 
     fun padding(top: Int, left: Int, right: Int, bottom: Int) {
         padding = Point4(top, left, right, bottom)
@@ -25,7 +27,14 @@ interface BoxBuilder {
 
 open class BoxStyle: StyleContext(), BoxBuilder {
     override var padding = Point4(0, 0, 0, 0)
-    override var background: Color? = null
+    open var background: Color? = null
+    open var backgroundImage: ResourceLocation? = null
+
+    /**
+     * Size of background image
+     */
+    var backgroundSize: Size? = null
+    var backgroundFit: ImageFit = ImageFit.Stretch
 }
 
 abstract class BoxElement<S: BoxStyle>(create: () -> S): UIElement<S>(create) {
@@ -60,6 +69,9 @@ abstract class BoxElement<S: BoxStyle>(create: () -> S): UIElement<S>(create) {
         with (style) {
             if (background != null) {
                 stack.fillRect(0, 0, size.width, size.height, background!!)
+            }
+            if (backgroundImage != null) {
+                stack.drawImage(backgroundFit, backgroundSize?: size, backgroundImage!!)
             }
             stack.translate(padding.left, padding.right)
         }
