@@ -50,7 +50,8 @@ fun example.examplemod.mineui.core.Component.test(key: Any) = child(key) {
     println("$key $state ${theme?.text}")
 }
 
-val backgroundImage = ResourceLocation(ExampleMod.ID, "sky.jpg")
+val sky = ResourceLocation(ExampleMod.ID, "sky.jpg")
+val meme = ResourceLocation(ExampleMod.ID, "meme.png")
 
 fun example() = component {
     var direction by useState { Direction.Row }
@@ -59,15 +60,17 @@ fun example() = component {
     element(::StackLayout) {
         background = Color.RED
         padding(4)
+        backgroundImage = meme
+        backgroundFit = ImageFit.Contain
         gap = 5
     }
 
     ThemeContext.provider(Theme("Hello World")) {
         test(0)
     }
-    image { src = backgroundImage; width = 170; height = 100 }
-    image { src = backgroundImage; width = 170; height = 100; objectFit = ImageFit.Contain }
-    image { src = backgroundImage; width = 170; height = 100; objectFit = ImageFit.Cover }
+    if (toggle) {
+        image { src = sky; width = 170; height = 100; objectFit = ImageFit.Cover }
+    }
 
     button({
         bold()
