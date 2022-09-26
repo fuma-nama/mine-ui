@@ -130,36 +130,3 @@ fun DrawStack.drawImage(fit: ImageFit, size: Size, src: ResourceLocation) {
         }
     }
 }
-
-fun ImageFit.calcDrawSize(width: Int?, height: Int?, src: ResourceLocation): Size {
-    Minecraft.getInstance().textureManager.bindForSetup(src)
-
-    val originalW = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH)
-    val originalH = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_HEIGHT)
-
-    if (width == null && height == null) {
-        return Size(originalW, originalH)
-    }
-
-    val scaleX = width?.let { it.toDouble() / originalW }
-    val scaleY = height?.let { it.toDouble() / originalH }
-
-    return when (this) {
-        ImageFit.Stretch -> {
-            val scaledW = originalW * (scaleX?: scaleY!!)
-            val scaledH = originalH * (scaleY?: scaleX!!)
-
-            Size(scaledW.toInt(), scaledH.toInt())
-        }
-        ImageFit.Contain -> {
-            val minScale = min(scaleX, scaleY)!!
-
-            Size((originalW * minScale).toInt(), (originalH * minScale).toInt())
-        }
-        ImageFit.Cover -> {
-            val maxScale = max(scaleX, scaleY)!!
-
-            Size((originalW * maxScale).toInt(), (originalH * maxScale).toInt())
-        }
-    }
-}
