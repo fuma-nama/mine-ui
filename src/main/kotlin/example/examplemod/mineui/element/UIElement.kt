@@ -51,10 +51,11 @@ abstract class UIElement<S: StyleContext>(val createStyle: () -> S): RenderNode(
     }
 
     open fun getSize(): Size {
-        val min = getMinimumSize()
 
         return when (style.size) {
             is DynamicSize -> with (style.size as DynamicSize) {
+                val min = getMinimumSize()
+
                 Env(min).get()
             }
             is Size -> {
