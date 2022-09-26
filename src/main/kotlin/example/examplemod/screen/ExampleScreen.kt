@@ -1,6 +1,7 @@
 package example.examplemod.screen
 
 import com.mojang.blaze3d.vertex.PoseStack
+import example.examplemod.ExampleMod
 import example.examplemod.mineui.*
 import example.examplemod.mineui.core.UI
 import example.examplemod.mineui.element.layout.StackLayout
@@ -9,10 +10,12 @@ import example.examplemod.mineui.hooks.useContext
 import example.examplemod.mineui.hooks.useState
 import example.examplemod.mineui.style.Direction
 import example.examplemod.mineui.style.HorizontalAlign
+import example.examplemod.mineui.style.ImageFit
 import example.examplemod.mineui.style.VerticalAlign
 import example.examplemod.mineui.utils.Size
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
 import java.awt.Color
 
 class Theme(
@@ -47,6 +50,8 @@ fun example.examplemod.mineui.core.Component.test(key: Any) = child(key) {
     println("$key $state ${theme?.text}")
 }
 
+val backgroundImage = ResourceLocation(ExampleMod.ID, "sky.jpg")
+
 fun example() = component {
     var direction by useState { Direction.Row }
     var toggle by useState { false }
@@ -60,6 +65,9 @@ fun example() = component {
     ThemeContext.provider(Theme("Hello World")) {
         test(0)
     }
+    image { src = backgroundImage; width = 170; height = 170 }
+    image { src = backgroundImage; width = 170; height = 140; objectFit = ImageFit.Contain }
+    image { src = backgroundImage; width = 170; height = 140; objectFit = ImageFit.Cover }
 
     button({
         bold()
