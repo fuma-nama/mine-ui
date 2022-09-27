@@ -7,6 +7,7 @@ import example.examplemod.mineui.element.layout.StackLayout
 import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.utils.Size
 import example.examplemod.mineui.wrapper.DrawStackDefault
+import net.minecraft.client.gui.Gui
 
 class UI(var size: Size? = null, render: Component.() -> Unit) {
     val root = Component(this, render, element = StackLayout())
@@ -31,6 +32,8 @@ class UI(var size: Size? = null, render: Component.() -> Unit) {
 
     fun draw(stack: PoseStack, mouseX: Int, mouseY: Int) {
         root.draw(DrawStackDefault(stack))
+        //clear states after drawing ui elements
+        Gui.disableScissor()
     }
 
     fun onClick(x: Double, y: Double, type: Int): Boolean {

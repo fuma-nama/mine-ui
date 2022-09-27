@@ -6,6 +6,6 @@ A high-performance Functional Programming style UI Framework for Minecraft Forge
 * ~~Image Element and Background Images~~
 * Text Fields, both single line and multi-line
 * Supports RichText (Minecraft Chat's `Component` class)
-* Drop Filter such as blur and brightness
+* Filter such as blur and brightness
 * Supports Opacity property
 * Checkbox and Radio buttons
