@@ -38,6 +38,20 @@ open class DrawStackDefault(val base: PoseStack): DrawStack {
         )
     }
 
+    override fun scissor(x: Int, y: Int, width: Int, height: Int) {
+        val dx = translated.x + x
+        val dy = translated.y + y
+
+        Gui.enableScissor(
+            dx, dy, //x and y
+            dx + width, dy + height //size
+        )
+    }
+
+    override fun scale(x: Float, y: Float, z: Float) {
+        base.scale(x, y, z)
+    }
+
     override fun fillRect(x: Int, y: Int, width: Int, height: Int, color: Int) {
         val ox = translated.x + x
         val oy = translated.y + y
@@ -48,10 +62,10 @@ open class DrawStackDefault(val base: PoseStack): DrawStack {
 
 interface DrawStack {
     var translated: PosXY
+
     fun translate(x: Int = 0, y: Int = 0)  {
         translated = PosXY(translated.x + x, translated.y + y)
     }
-    fun translate(pos: PosXY) = translate(pos.x, pos.y)
 
     fun drawText(font: Font, text: String, x: Float, y: Float, color: Color) =
         drawText(font, text, x, y, color.rgb)
@@ -72,6 +86,10 @@ interface DrawStack {
         drawImage(x, y, 0, 0, width, height, width, height, image)
 
     fun drawImage(x: Int, y: Int, offsetX: Int, offsetY: Int, width: Int, height: Int, containerW: Int, containerH: Int, image: ResourceLocation)
+
+    fun scissor(x: Int, y: Int, width: Int, height: Int)
+
+    fun scale(x: Float, y: Float, z: Float)
 }
 
 fun DrawStack.translate(render: () -> Unit) {
