@@ -7,18 +7,20 @@ import example.examplemod.mineui.wrapper.translate
 
 abstract class RenderNode {
     open val children: List<RenderNode> = emptyList()
-    private lateinit var position: PosXY
-    private lateinit var size: Size
+    lateinit var absolutePosition: PosXY
+        private set
+    lateinit var absoluteSize: Size
+        private set
 
-    open val absolutePosition by ::position
-    open val absoluteSize by ::size
+    open fun bindPosition(original: PosXY): PosXY = original
 
     fun drawNode(stack: DrawStack) {
         stack.translated = absolutePosition
 
         stack.translate {
-            draw(stack, absoluteSize)
+            stack.scissor(0, 0, absoluteSize.width, absoluteSize.height)
 
+            draw(stack, absoluteSize)
             for (element in children) {
                 element.drawNode(stack)
             }
@@ -33,8 +35,8 @@ abstract class RenderNode {
     open fun drawFilter(stack: DrawStack, size: Size) = Unit
 
     fun reflowNode(pos: PosXY, size: Size) {
-        this.position = pos
-        this.size = size
+        this.absolutePosition = bindPosition(pos)
+        this.absoluteSize = size
 
         reflow(pos, size)
     }

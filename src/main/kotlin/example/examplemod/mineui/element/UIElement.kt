@@ -37,13 +37,14 @@ abstract class UIElement<S: StyleContext>(val createStyle: () -> S): RenderNode(
 
     override fun reflow(pos: PosXY, size: Size) = Unit
 
-    override val absolutePosition: PosXY
-        get() = when (style.position) {
+    override fun bindPosition(original: PosXY): PosXY {
+        return when (style.position) {
             is DynamicPosition -> (style.position as DynamicPosition).receive(
-                super.absolutePosition
+                original
             )
             is PosXY -> style.position as PosXY
         }
+    }
 
     fun update(style: S.() -> Unit) {
         this.style = createStyle().apply(style)
