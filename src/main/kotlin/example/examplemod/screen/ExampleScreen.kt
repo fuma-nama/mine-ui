@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack
 import example.examplemod.ExampleMod
 import example.examplemod.mineui.*
 import example.examplemod.mineui.core.UI
+import example.examplemod.mineui.element.Overflow
 import example.examplemod.mineui.element.layout.StackLayout
 import example.examplemod.mineui.hooks.createContext
 import example.examplemod.mineui.hooks.useContext
@@ -63,6 +64,7 @@ fun example() = component {
         backgroundImage = meme
         backgroundFit = ImageFit.Contain
         gap = 5
+        overflow(Overflow.Scroll)
     }
 
     ThemeContext.provider(Theme("Hello World")) {
