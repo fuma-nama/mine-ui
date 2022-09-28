@@ -66,20 +66,27 @@ abstract class BoxElement<S: BoxStyle>(create: () -> S): UIElement<S>(create) {
     }
 
     override fun draw(stack: DrawStack, size: Size) {
-        with (style) {
-            if (background != null) {
-                stack.fillRect(0, 0, size.width, size.height, background!!)
-            }
-            if (backgroundImage != null) {
-                stack.drawImage(backgroundFit, backgroundSize?: size, backgroundImage!!)
-            }
-            stack.translate(padding.left, padding.right)
-        }
+        val padding = style.padding
+        drawBackground(stack, size)
+
+        stack.translate(padding.left, padding.right)
 
         drawContent(stack, Size(
             size.width - style.padding.px,
             size.height - style.padding.py
         ))
+    }
+
+    fun drawBackground(stack: DrawStack, size: Size) {
+        with(style) {
+            if (background != null) {
+                stack.fillRect(0, 0, size.width, size.height, background!!)
+            }
+            if (backgroundImage != null) {
+                stack.drawImage(backgroundFit, backgroundSize ?: size, backgroundImage!!)
+            }
+            stack.translate(padding.left, padding.right)
+        }
     }
 
     open fun drawContent(stack: DrawStack, size: Size) = Unit
