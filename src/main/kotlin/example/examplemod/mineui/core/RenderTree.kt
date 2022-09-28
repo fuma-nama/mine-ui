@@ -14,19 +14,21 @@ abstract class RenderNode {
 
     open fun bindPosition(original: PosXY): PosXY = original
 
-    fun drawNode(stack: DrawStack) {
+    open fun drawNode(stack: DrawStack) {
         stack.translated = absolutePosition
 
         stack.translate {
-            stack.scissor(0, 0, absoluteSize.width, absoluteSize.height)
-
             draw(stack, absoluteSize)
-            for (element in children) {
-                element.drawNode(stack)
-            }
+            drawChildren(stack)
         }
 
         drawFilter(stack, absoluteSize)
+    }
+
+    open fun drawChildren(stack: DrawStack) {
+        for (element in children) {
+            element.drawNode(stack)
+        }
     }
 
     /**
