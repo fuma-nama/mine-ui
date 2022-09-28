@@ -10,8 +10,11 @@ import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import java.awt.Color
 
+data class Scissor(val x: Int, val y: Int, val width: Int, val height: Int)
+
 open class DrawStackDefault(val base: PoseStack): DrawStack {
     override var translated: PosXY = PosXY(0, 0)
+    override var scissor: Scissor? = null
 
     override fun drawText(font: Font, text: String, x: Float, y: Float, color: Int) {
         font.draw(base, text, translated.x + x, translated.y + y, color)
@@ -41,10 +44,14 @@ open class DrawStackDefault(val base: PoseStack): DrawStack {
     override fun scissor(x: Int, y: Int, width: Int, height: Int) {
         val dx = translated.x + x
         val dy = translated.y + y
-
         Gui.enableScissor(
             dx, dy, //x and y
             dx + width, dy + height //size
+        )
+
+        scissor = Scissor(
+            dx, dy, //x and y
+            dx + width, dy + height
         )
     }
 
@@ -62,6 +69,7 @@ open class DrawStackDefault(val base: PoseStack): DrawStack {
 
 interface DrawStack {
     var translated: PosXY
+    var scissor: Scissor?
 
     fun translate(x: Int = 0, y: Int = 0)  {
         translated = PosXY(translated.x + x, translated.y + y)
