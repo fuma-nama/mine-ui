@@ -47,3 +47,9 @@ abstract class RenderNode {
 
     abstract fun reflow(pos: PosXY, size: Size)
 }
+
+fun RenderNode.isIn(x: Double, y: Double): Boolean {
+    return x >= absolutePosition.x && x <= absolutePosition.x + absoluteSize.width
+            &&
+            y >= absolutePosition.y && y <= absolutePosition.y + absoluteSize.height
+}
