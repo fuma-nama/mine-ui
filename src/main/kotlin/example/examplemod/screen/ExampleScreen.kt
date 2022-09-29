@@ -24,7 +24,6 @@ class Theme(
 )
 
 val ThemeContext = createContext<Theme>()
-
 class ExampleGUI(p_96550_: Component) : Screen(p_96550_) {
     val root: UI = example()
 
@@ -36,6 +35,22 @@ class ExampleGUI(p_96550_: Component) : Screen(p_96550_) {
 
     override fun mouseClicked(x: Double, y: Double, type: Int): Boolean {
         return root.onClick(x, y, type)
+    }
+
+    override fun mouseDragged(
+        p_94699_: Double,
+        p_94700_: Double,
+        p_94701_: Int,
+        p_94702_: Double,
+        p_94703_: Double
+    ): Boolean {
+        return root.onDrag(
+            p_94699_,
+            p_94700_,
+            p_94701_,
+            p_94702_,
+            p_94703_
+        )
     }
 
     override fun render(stack: PoseStack, x: Int, y: Int, c: Float) {
@@ -82,8 +97,6 @@ fun example() = component {
                 Direction.Row -> Direction.Column
                 Direction.Column -> Direction.Row
             }
-
-            true
         }
     }) { "Click Me" }
     label { "Hello MONEY" }
@@ -92,7 +105,6 @@ fun example() = component {
             background = Color.BLUE
             click { x, y, type ->
                 toggle = !toggle
-                true
             }
         }) {
             label { "Hello Kane" }
