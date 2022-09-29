@@ -1,7 +1,11 @@
 package example.examplemod.mineui.element
 
+import example.examplemod.mineui.core.GuiEventContext
+import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.utils.Size
 import example.examplemod.mineui.wrapper.DrawStack
+import example.examplemod.mineui.wrapper.GUIListener
+import example.examplemod.mineui.wrapper.NestGUIListener
 import example.examplemod.mineui.wrapper.translate
 import net.minecraft.client.gui.Gui
 import java.awt.Color
@@ -39,38 +43,79 @@ enum class Overflow {
 }
 
 class ScrollbarStyle {
-    var width: Int = 10
-    var thumb: Color = Color.BLUE
+    var width: Int = 5
+    var thumb: Color = Color.LIGHT_GRAY
     var track: Color = Color.DARK_GRAY
 }
 
 abstract class Container<S: ContainerStyle>(create: () -> S) : BoxElement<S>(create) {
-    private lateinit var minSize: Size
+    override var listener: GUIListener?
+        get() = object : NestGUIListener(super.listener) {
+            override fun onDrag(
+                mouseX: Double,
+                mouseY: Double,
+                mouseButton: Int,
+                dragX: Double,
+                dragY: Double,
+                context: GuiEventContext
+            ) {
+                if (overflowX) {
+                    val top = absolutePosition.y + absoluteSize.height - style.scrollbar.width
+                    val bottom = absolutePosition.y + absoluteSize.height
+
+                    if (mouseY.toInt() in top..bottom) {
+                        context.reflow = true
+                        scrollX = (scrollX + dragX.toInt())
+                            .coerceAtMost(minSize.width - absoluteSize.width)
+                            .coerceAtLeast(0)
+                    }
+                }
+
+                if (overflowY) {
+                    val left = absolutePosition.x + absoluteSize.width - style.scrollbar.width
+                    val right = absolutePosition.x + absoluteSize.width
+
+                    if (mouseX.toInt() in left..right) {
+                        context.reflow = true
+                        scrollY = (scrollY + dragY.toInt())
+                            .coerceAtMost(minSize.height - absoluteSize.height)
+                            .coerceAtLeast(0)
+                    }
+                }
+
+                return super.onDrag(mouseX, mouseY, mouseButton, dragX, dragY, context)
+            }
+        }
+        set(value) {
+            super.listener = value
+        }
+
     override val children: ArrayList<UIElement<*>> = arrayListOf()
+    lateinit var minSize: Size
     var scrollX: Int = 0
     var scrollY: Int = 0
+    var overflowX: Boolean = false
+    var overflowY: Boolean = false
+
+    override fun reflow(pos: PosXY, size: Size) {
+        val min = getMinimumSize()
+        overflowX = style.overflowX.isOverflowed(min, size)
+        overflowY = style.overflowY.isOverflowed(min, size)
+        minSize = min.plus(
+            width =  if (overflowY) style.scrollbar.width else 0,
+            height = if (overflowX) style.scrollbar.width else 0
+        )
+
+        super.reflow(pos.minus(x = scrollX, y = scrollY), size.minusScrollbars())
+    }
 
     override fun draw(stack: DrawStack, size: Size) {
-        minSize = getMinimumSize()
         val cut = style.overflowX != Overflow.Visible || style.overflowY != Overflow.Visible
-        var inner = size
-
-        if (style.overflowX.isOverflowed(minSize, size)) {
-            inner = Size(
-                inner.width - style.scrollbar.width,
-                inner.height
-            )
-        }
-
-        if (style.overflowY.isOverflowed(minSize, size)) {
-            inner = Size(inner.width, inner.height - style.scrollbar.width)
-        }
-
         if (cut) {
             stack.scissor(0, 0, size.width, size.height)
         }
 
-        super.draw(stack, inner)
+        super.draw(stack, size)
     }
 
     override fun drawChildren(stack: DrawStack) {
@@ -80,13 +125,14 @@ abstract class Container<S: ContainerStyle>(create: () -> S) : BoxElement<S>(cre
         stack.translate {
             stack.translated = absolutePosition
             val size = absoluteSize
+            val content = minSize
 
-            if (style.overflowX.isOverflowed(minSize, size)) {
-                drawXScrollbar(stack, minSize, size)
+            if (overflowX) {
+                drawXScrollbar(stack, content, size)
             }
 
-            if (style.overflowY.isOverflowed(minSize, size)) {
-                drawYScrollbar(stack, minSize, size)
+            if (overflowY) {
+                drawYScrollbar(stack, content, size)
             }
         }
     }
@@ -111,5 +157,12 @@ abstract class Container<S: ContainerStyle>(create: () -> S) : BoxElement<S>(cre
 
     override fun invalidate() {
         children.clear()
+    }
+
+    private fun Size.minusScrollbars(): Size {
+        return minus(
+            width =  if (overflowY) style.scrollbar.width else 0,
+            height = if (overflowX) style.scrollbar.width else 0
+        )
     }
 }

@@ -1,7 +1,6 @@
 package example.examplemod.mineui.element
 
 import example.examplemod.mineui.core.RenderNode
-import example.examplemod.mineui.core.UI
 import example.examplemod.mineui.style.DynamicPosition
 import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.style.PositionInput
@@ -33,7 +32,6 @@ open class StyleContext: GuiListenerBuilder() {
 }
 
 abstract class UIElement<S: StyleContext>(val createStyle: () -> S): RenderNode() {
-    lateinit var ui: UI
     var style: S = createStyle()
     open var listener: GUIListener? = null
 
