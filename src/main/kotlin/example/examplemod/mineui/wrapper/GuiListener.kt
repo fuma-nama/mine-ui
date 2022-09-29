@@ -1,26 +1,59 @@
 package example.examplemod.mineui.wrapper
 
-import net.minecraft.client.gui.components.events.GuiEventListener
+import example.examplemod.mineui.core.GuiEventContext
 
 open class GuiListenerBuilder {
-    var onClick: ((x: Double, y: Double, type: Int) -> Boolean)? = null
+    var onClick: (GuiEventContext.(x: Double, y: Double, type: Int) -> Unit)? = null
+    var onDrag: (GuiEventContext.(
+        mouseX: Double,
+        mouseY: Double,
+        mouseButton: Int,
+        dragX: Double,
+        dragY: Double
+    ) -> Unit)? = null
 
-    fun click(handler: (x: Double, y: Double, type: Int) -> Boolean) {
+    fun click(handler: GuiEventContext.(x: Double, y: Double, type: Int) -> Unit) {
         onClick = handler
     }
 
-    fun clickDefault(handler: (x: Double, y: Double, type: Int) -> Unit) {
-        onClick = {x, y, type ->
-            handler(x, y, type)
-            true
-        }
-    }
+    fun buildListener(): GUIListener {
+        return object : GUIListener {
+            override fun onClick(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) {
+                onClick?.invoke(context, x, y, mouseButton)
+            }
 
-    fun buildListener(): GuiEventListener {
-        return object : GuiEventListener {
-            override fun mouseClicked(x: Double, y: Double, type: Int): Boolean {
-                return onClick?.invoke(x, y, type)?: false
+            override fun onDrag(
+                mouseX: Double,
+                mouseY: Double,
+                mouseButton: Int,
+                dragX: Double,
+                dragY: Double,
+                context: GuiEventContext
+            ) {
+                onDrag?.invoke(context, mouseX, mouseY, mouseButton, dragX, dragY)
             }
         }
     }
+}
+
+open class NestGUIListener(val base: GUIListener?): GUIListener {
+    override fun onClick(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) {
+        base?.onClick(x, y, mouseButton, context)
+    }
+
+    override fun onDrag(mouseX: Double, mouseY: Double, mouseButton: Int, dragX: Double, dragY: Double, context: GuiEventContext) {
+        base?.onDrag(mouseX, mouseY, mouseButton, dragX, dragY, context)
+    }
+}
+
+interface GUIListener {
+    fun onClick(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) = Unit
+    fun onDrag(
+        mouseX: Double,
+        mouseY: Double,
+        mouseButton: Int,
+        dragX: Double,
+        dragY: Double,
+        context: GuiEventContext
+    ) = Unit
 }
