@@ -85,7 +85,6 @@ abstract class BoxElement<S: BoxStyle>(create: () -> S): UIElement<S>(create) {
             if (backgroundImage != null) {
                 stack.drawImage(backgroundFit, backgroundSize ?: size, backgroundImage!!)
             }
-            stack.translate(padding.left, padding.right)
         }
     }
 
