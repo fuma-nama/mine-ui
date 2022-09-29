@@ -39,14 +39,27 @@ class UI(var size: Size? = null, render: Component.() -> Unit) {
     fun onClick(x: Double, y: Double, type: Int): Boolean {
         fireEvent(
             this.root.element!!,
-            { element ->
-                val pos = element.absolutePosition
-                val size = element.absoluteSize
+            { element -> element.isIn(x, y) },
+            { element, context ->
+                element.listener?.onClick(x, y, type, context)
+            }
+        )
+        return true
+    }
 
-                pos.x <= x && pos.x + size.width >= x &&
-                        pos.y <= y && pos.y + size.height >= y
-            },
-            { it.listener?.mouseClicked(x, y, type) == true }
+    fun onDrag(
+        mouseX: Double,
+        mouseY: Double,
+        mouseButton: Int,
+        dragX: Double,
+        dragY: Double
+    ): Boolean {
+
+        fireEvent(this.root.element!!,
+            { element -> element.isIn(mouseX, mouseY) },
+            { element, context ->
+                element.listener?.onDrag(mouseX, mouseY, mouseButton, dragX, dragY, context)
+            }
         )
         return true
     }
@@ -54,10 +67,14 @@ class UI(var size: Size? = null, render: Component.() -> Unit) {
     fun fireEvent(
         element: UIElement<*>,
         filter: (UIElement<*>) -> Boolean,
-        action: (UIElement<*>) -> Boolean
+        action: (UIElement<*>, GuiEventContext) -> Unit
     ) {
-        if (filter(element) && action(element)) {
-            return
+        if (filter(element)) {
+            val context = GuiEventContext(this, element)
+            action(element, context)
+
+            if (context.reflow) reflow()
+            if (context.prevent) return
         }
 
         if (element is Container<*>) {

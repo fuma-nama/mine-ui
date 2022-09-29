@@ -1,13 +1,14 @@
 package example.examplemod.mineui.element
 
 import example.examplemod.mineui.core.RenderNode
+import example.examplemod.mineui.core.UI
 import example.examplemod.mineui.style.DynamicPosition
 import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.style.PositionInput
 import example.examplemod.mineui.style.Relative
 import example.examplemod.mineui.utils.*
+import example.examplemod.mineui.wrapper.GUIListener
 import example.examplemod.mineui.wrapper.GuiListenerBuilder
-import net.minecraft.client.gui.components.events.GuiEventListener
 
 open class StyleContext: GuiListenerBuilder() {
     var position: PositionInput = Relative
@@ -32,8 +33,9 @@ open class StyleContext: GuiListenerBuilder() {
 }
 
 abstract class UIElement<S: StyleContext>(val createStyle: () -> S): RenderNode() {
+    lateinit var ui: UI
     var style: S = createStyle()
-    var listener: GuiEventListener? = null
+    open var listener: GUIListener? = null
 
     override fun reflow(pos: PosXY, size: Size) = Unit
 
