@@ -11,6 +11,14 @@ data class Size(val width: Int, val height: Int): SizeInput {
         return Size(width + other.width, height + other.height)
     }
 
+    fun plus(width: Int = 0, height: Int = 0): Size {
+        return Size(this.width + width, this.height + height)
+    }
+
+    fun minus(width: Int = 0, height: Int = 0): Size {
+        return Size(this.width - width, this.height - height)
+    }
+
     /**
      * Combine a new Size object with greatest size from two sizes
      */
