@@ -4,15 +4,11 @@ import com.mojang.blaze3d.vertex.PoseStack
 import example.examplemod.ExampleMod
 import example.examplemod.mineui.*
 import example.examplemod.mineui.core.UI
-import example.examplemod.mineui.element.Overflow
 import example.examplemod.mineui.element.layout.StackLayout
 import example.examplemod.mineui.hooks.createContext
 import example.examplemod.mineui.hooks.useContext
 import example.examplemod.mineui.hooks.useState
-import example.examplemod.mineui.style.Direction
-import example.examplemod.mineui.style.HorizontalAlign
-import example.examplemod.mineui.style.ImageFit
-import example.examplemod.mineui.style.VerticalAlign
+import example.examplemod.mineui.style.*
 import example.examplemod.mineui.utils.Size
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
@@ -33,8 +29,20 @@ class ExampleGUI(p_96550_: Component) : Screen(p_96550_) {
         root.updateSize(width, height)
     }
 
+    override fun mouseReleased(x: Double, y: Double, button: Int): Boolean {
+        return root.onMouseReleased(x, y, button)
+    }
+
     override fun mouseClicked(x: Double, y: Double, type: Int): Boolean {
         return root.onClick(x, y, type)
+    }
+
+    override fun charTyped(char: Char, key: Int): Boolean {
+        return root.onType(char, key)
+    }
+
+    override fun mouseScrolled(p_94686_: Double, p_94687_: Double, p_94688_: Double): Boolean {
+        return root.onScroll(p_94686_, p_94687_, p_94688_)
     }
 
     override fun mouseDragged(
@@ -148,6 +156,7 @@ fun example() = component {
         background = Color.BLACK
         this.direction = direction
     }) {
+        var input by useState { "Text" }
         label({ bold(); italic() }) { "Hello World" }
 
         space { Size(10, 10) }
@@ -155,6 +164,13 @@ fun example() = component {
 
         absolute({ position(0, 0) }) {
             label { "Wow" }
+        }
+
+        textField {
+            text = input
+            onChange = {
+                input = it
+            }
         }
     }
 }
