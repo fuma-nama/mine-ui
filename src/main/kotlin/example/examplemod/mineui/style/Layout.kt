@@ -1,6 +1,7 @@
 package example.examplemod.mineui.style
 
 import example.examplemod.mineui.utils.Size
+import java.awt.Color
 
 enum class VerticalAlign {
     Start, Center, End;
@@ -40,4 +41,22 @@ enum class HorizontalAlign {
 
 enum class Direction {
     Column, Row
+}
+
+enum class Overflow {
+    Auto, Scroll, Visible, Hidden;
+
+    fun isOverflowed(min: Size, size: Size): Boolean {
+        return when (this) {
+            Scroll -> true
+            Hidden, Visible -> false
+            Auto -> min.width > size.width
+        }
+    }
+}
+
+class ScrollbarStyle {
+    var width: Int = 5
+    var thumb: Color = Color.LIGHT_GRAY
+    var track: Color = Color.DARK_GRAY
 }
