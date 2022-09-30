@@ -1,5 +1,6 @@
 package example.examplemod.mineui.element.internal
 
+import example.examplemod.mineui.core.EventType
 import example.examplemod.mineui.core.GuiEventContext
 import example.examplemod.mineui.element.BoxElement
 import example.examplemod.mineui.element.BoxStyle
@@ -31,7 +32,33 @@ open class ScrollViewStyle : BoxStyle() {
     }
 }
 
+enum class Scrolling {
+    X, Y
+}
+
 abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(create) {
+    private var scrolling: Scrolling? = null
+    override fun onClick(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) {
+        super.onClick(x, y, mouseButton, context)
+        if (scrolling != null) return
+        val hooked = context.ui.state.hooked
+
+        val top = absolutePosition.y + absoluteSize.height - style.scrollbar.width
+        val bottom = absolutePosition.y + absoluteSize.height
+        val left = absolutePosition.x + absoluteSize.width - style.scrollbar.width
+        val right = absolutePosition.x + absoluteSize.width
+
+        scrolling = when {
+            overflowX && y.toInt() in top..bottom -> Scrolling.X
+            overflowY && x.toInt() in left..right -> Scrolling.Y
+            else -> return
+        }
+        if (scrolling != null) {
+            hooked[EventType.MouseDrag] = this
+            hooked[EventType.MouseRelease] = this
+        }
+    }
+
     override fun onDrag(
         mouseX: Double,
         mouseY: Double,
@@ -40,31 +67,40 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
         dragY: Double,
         context: GuiEventContext
     ) {
-        if (overflowX) {
-            val top = absolutePosition.y + absoluteSize.height - style.scrollbar.width
-            val bottom = absolutePosition.y + absoluteSize.height
-
-            if (mouseY.toInt() in top..bottom) {
+        when (scrolling) {
+            Scrolling.X -> {
                 context.reflow = true
                 scrollX = (scrollX + dragX.toInt())
                     .coerceAtMost(minSize.width - absoluteSize.width)
                     .coerceAtLeast(0)
             }
-        }
-
-        if (overflowY) {
-            val left = absolutePosition.x + absoluteSize.width - style.scrollbar.width
-            val right = absolutePosition.x + absoluteSize.width
-
-            if (mouseX.toInt() in left..right) {
+            Scrolling.Y -> {
                 context.reflow = true
                 scrollY = (scrollY + dragY.toInt())
                     .coerceAtMost(minSize.height - absoluteSize.height)
                     .coerceAtLeast(0)
             }
+            else -> {}
         }
 
         return super.onDrag(mouseX, mouseY, mouseButton, dragX, dragY, context)
+    }
+
+    override fun onScroll(x: Double, y: Double, scroll: Double, context: GuiEventContext) {
+        context.reflow = true
+        scrollY = (scrollY - (scroll.toInt() * style.scrollbar.speed))
+            .coerceAtMost(minSize.height - absoluteSize.height)
+            .coerceAtLeast(0)
+        super.onScroll(x, y, scroll, context)
+    }
+
+    override fun onMouseReleased(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) {
+        val hooked = context.ui.state.hooked
+
+        scrolling = null
+        hooked.remove(EventType.MouseDrag, this)
+        hooked.remove(EventType.MouseRelease, this)
+        super.onMouseReleased(x, y, mouseButton, context)
     }
 
     lateinit var minSize: Size
