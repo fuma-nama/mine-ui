@@ -1,5 +1,6 @@
 package example.examplemod.mineui.element
 
+import example.examplemod.mineui.core.GuiEventContext
 import example.examplemod.mineui.core.RenderNode
 import example.examplemod.mineui.style.DynamicPosition
 import example.examplemod.mineui.style.PosXY
@@ -31,9 +32,29 @@ open class StyleContext: GuiListenerBuilder() {
     }
 }
 
-abstract class UIElement<S: StyleContext>(val createStyle: () -> S): RenderNode() {
+abstract class UIElement<S: StyleContext>(val createStyle: () -> S): RenderNode(), GUIListener {
     var style: S = createStyle()
-    open var listener: GUIListener? = null
+    var listener: GUIListener? = null
+
+    override fun onType(char: Char, key: Int, context: GuiEventContext) {
+        listener?.onType(char, key, context)
+    }
+
+    override fun onDrag(
+        mouseX: Double,
+        mouseY: Double,
+        mouseButton: Int,
+        dragX: Double,
+        dragY: Double,
+        context: GuiEventContext
+    ) {
+        listener?.onDrag(mouseX, mouseY, mouseButton, dragX, dragY, context)
+    }
+
+    override fun onClick(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) {
+        context.ui.focus(this)
+        listener?.onClick(x, y, mouseButton, context)
+    }
 
     override fun reflow(pos: PosXY, size: Size) = Unit
 
@@ -46,7 +67,7 @@ abstract class UIElement<S: StyleContext>(val createStyle: () -> S): RenderNode(
         }
     }
 
-    fun update(style: S.() -> Unit) {
+    open fun update(style: S.() -> Unit) {
         this.style = createStyle().apply(style)
         this.listener = this.style.buildListener()
     }
