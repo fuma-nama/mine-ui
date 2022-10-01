@@ -9,3 +9,4 @@ A high-performance Functional Programming style UI Framework for Minecraft Forge
 * Filter such as blur and brightness
 * Supports Opacity property
 * Checkbox and Radio buttons
+* Support Mask Element
