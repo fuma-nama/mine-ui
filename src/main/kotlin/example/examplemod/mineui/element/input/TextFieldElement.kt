@@ -36,7 +36,7 @@ class TextFieldStyle : BoxStyle(), LabelBuilder {
 }
 
 data class Cursor(
-    val step: Int = 2,
+    val step: Int = 30,
     val color: Color = Color.WHITE,
     val width: Int = 1,
     val selection: Color = Color.BLUE,
@@ -126,13 +126,15 @@ class TextFieldElement : BoxElement<TextFieldStyle>(::TextFieldStyle) {
             stack.drawHighlight(left, 0, right - left, style.font.lineHeight, style.cursor.selection.rgb)
         }
 
-        if (tick / 6 % style.cursor.step == 0) {
-            tick = 0
-
+        if (tick / style.cursor.step % 2 == 0) {
             stack.fillRect(cursorPos, 0, style.cursor.width, style.font.lineHeight, style.cursor.color)
         }
+        if (tick == Int.MAX_VALUE) {
+            tick = 0
+        } else {
+            tick++
+        }
 
-        tick++
         RenderSystem.disableScissor()
     }
 }
