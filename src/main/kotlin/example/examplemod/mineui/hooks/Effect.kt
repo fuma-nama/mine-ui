@@ -40,7 +40,7 @@ inline fun<reified V> Component.useState(id: Any, crossinline initial: () -> V):
 
     return object : State<V>() {
         override var value: V
-            get() = use(key, initial)
+            get() = hooks.getOrPut(key, initial) as V
             set(value) {
                 hooks[key] = value
                 this@useState.update()
