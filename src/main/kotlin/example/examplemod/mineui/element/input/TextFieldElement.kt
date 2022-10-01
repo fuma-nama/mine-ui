@@ -23,9 +23,16 @@ class TextFieldStyle : BoxStyle(), LabelBuilder {
     override var textStyle: Style = Style.EMPTY
     override var color: Color = Color.WHITE
     override var font: Font = Minecraft.getInstance().font
+    var placeholder: String = ""
+    var placeholderColor: Color = Color.LIGHT_GRAY
     var cursor: Cursor = Cursor()
     var value: String = ""
     var onChange: (String) -> Unit = {}
+
+    fun placeholder(text: String = placeholder, color: Color = placeholderColor) {
+        placeholder = text
+        placeholderColor = color
+    }
 
     init {
         color = Color.WHITE
@@ -58,8 +65,6 @@ class TextFieldElement : BoxElement<TextFieldStyle>(::TextFieldStyle) {
     var selection by helper::selectionPos
 
     override fun onClick(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) {
-        context.ui.focus(this)
-
         val ox = x - (contentOffset.x + absolutePosition.x)
         val index = splitter.plainIndexAtWidth(value, ox.toInt(), style.textStyle).coerceIn(0, value.length)
         helper.setCursorPos(index, Screen.hasShiftDown())
@@ -109,26 +114,32 @@ class TextFieldElement : BoxElement<TextFieldStyle>(::TextFieldStyle) {
 
     override fun drawContent(stack: DrawStack, size: Size) {
         stack.scissor(0, 0, size.width, size.height)
+        val focus = ui.state.focus == this
         val cursorPos = indexToPosition(cursor)
         val cursorSpace = style.cursor.width + 5
 
-        if (cursorPos + cursorSpace > size.width) {
-            stack.translate(x = - (cursorPos + cursorSpace - size.width))
+        if (value.isNotEmpty()) {
+            if (cursorPos + cursorSpace > size.width) {
+                stack.translate(x = - (cursorPos + cursorSpace - size.width))
+            }
+
+            stack.drawText(style.font, value, 0F, 0F, style.color)
+
+            if (helper.isSelecting) {
+                val selectionPos = indexToPosition(selection)
+                val left = cursorPos.coerceAtMost(selectionPos)
+                val right = cursorPos.coerceAtLeast(selectionPos)
+
+                stack.drawHighlight(left, 0, right - left, style.font.lineHeight, style.cursor.selection.rgb)
+            }
+        } else {
+            stack.drawText(style.font, style.placeholder, 0F, 0F, style.placeholderColor)
         }
 
-        stack.drawText(style.font, value, 0F, 0F, style.color)
-
-        if (helper.isSelecting) {
-            val selectionPos = indexToPosition(selection)
-            val left = cursorPos.coerceAtMost(selectionPos)
-            val right = cursorPos.coerceAtLeast(selectionPos)
-
-            stack.drawHighlight(left, 0, right - left, style.font.lineHeight, style.cursor.selection.rgb)
-        }
-
-        if (tick / style.cursor.step % 2 == 0) {
+        if (tick / style.cursor.step % 2 == 0 && focus) {
             stack.fillRect(cursorPos, 0, style.cursor.width, style.font.lineHeight, style.cursor.color)
         }
+
         if (tick == Int.MAX_VALUE) {
             tick = 0
         } else {

@@ -1,5 +1,8 @@
 package example.examplemod.mineui.element.layout
 
+import example.examplemod.mineui.core.Component
+import example.examplemod.mineui.core.GuiEventContext
+import example.examplemod.mineui.core.UI
 import example.examplemod.mineui.element.Container
 import example.examplemod.mineui.element.ContainerStyle
 import example.examplemod.mineui.style.Direction
@@ -49,6 +52,20 @@ class StackLayout : Container<StackStyle>(::StackStyle) {
         }
 
         return Size(width = w, height = h)
+    }
+
+    init {
+        println("$this")
+    }
+
+    override fun onMouseReleased(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) {
+        println("$this")
+        super.onMouseReleased(x, y, mouseButton, context)
+    }
+
+    override fun init(ui: UI, component: Component) {
+        println("$this $ui")
+        super.init(ui, component)
     }
 
     override fun getContentSize(): Size {

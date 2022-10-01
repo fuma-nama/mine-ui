@@ -110,7 +110,7 @@ class UI(var size: Size? = null, render: Component.() -> Unit) {
     }
 
     fun execute(element: UIElement<*>, action: (GUIListener, GuiEventContext) -> Unit): GuiEventContext {
-        val context = GuiEventContext(this, element)
+        val context = GuiEventContext(element)
         action(element, context)
 
         return context

@@ -1,7 +1,9 @@
 package example.examplemod.mineui.element
 
+import example.examplemod.mineui.core.Component
 import example.examplemod.mineui.core.GuiEventContext
 import example.examplemod.mineui.core.RenderNode
+import example.examplemod.mineui.core.UI
 import example.examplemod.mineui.style.DynamicPosition
 import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.style.PositionInput
@@ -33,8 +35,13 @@ open class StyleContext: GuiListenerBuilder() {
 }
 
 abstract class UIElement<S: StyleContext>(val createStyle: () -> S): RenderNode(), GUIListener {
+    lateinit var ui: UI
     var style: S = createStyle()
     var listener: GUIListener? = null
+
+    open fun init(ui: UI, component: Component) {
+        this.ui = ui
+    }
 
     override fun onType(char: Char, key: Int, context: GuiEventContext) {
         listener?.onType(char, key, context)
@@ -52,7 +59,7 @@ abstract class UIElement<S: StyleContext>(val createStyle: () -> S): RenderNode(
     }
 
     override fun onClick(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) {
-        context.ui.focus(this)
+        ui.focus(this)
         context.prevent = true
         listener?.onClick(x, y, mouseButton, context)
     }

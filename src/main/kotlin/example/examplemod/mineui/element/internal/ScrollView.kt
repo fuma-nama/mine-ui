@@ -44,7 +44,7 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
     override fun onClick(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) {
         super.onClick(x, y, mouseButton, context)
         if (scrolling != null) return
-        val hooked = context.ui.state.hooked
+        val hooked = ui.state.hooked
 
         val top = absolutePosition.y + absoluteSize.height - style.scrollbar.width
         val bottom = absolutePosition.y + absoluteSize.height
@@ -102,7 +102,7 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
     }
 
     override fun onMouseReleased(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) {
-        val hooked = context.ui.state.hooked
+        val hooked = ui.state.hooked
 
         scrolling = null
         hooked.remove(EventType.MouseDrag, this)

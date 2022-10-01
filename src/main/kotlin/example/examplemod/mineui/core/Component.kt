@@ -9,20 +9,26 @@ import example.examplemod.mineui.utils.extractChildren
 import example.examplemod.mineui.wrapper.DrawStack
 
 @DslBuilder
-open class Component(
+class Component(
     var ui: UI,
     val render: Component.() -> Unit,
     var contexts: Map<Context<*>, Any?> = mapOf(),
-    var element: UIElement<*>? = null
 ) {
+    private var snapshot: Map<Any, Component>? = null
+    var element: UIElement<*>? = null
     val hooks: HashMap<HookKey, Any?> = hashMapOf()
     val children = linkedMapOf<Any, Component>()
 
-    private var snapshot: Map<Any, Component>? = null
+    constructor(ui: UI, render: Component.() -> Unit, element: UIElement<*>) : this(ui, render) {
+        this.element = element
+        element.init(ui, this)
+    }
 
     inline fun<reified E: UIElement<S>, S: StyleContext> element(element: () -> E, noinline style: S.() -> Unit): E {
         if (this.element == null) {
-            this.element = element()
+            this.element = element().also {
+                it.init(ui, this)
+            }
         }
 
         val current = this.element as E

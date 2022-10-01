@@ -173,7 +173,7 @@ fun example() = component {
             size {
                 Size(100, content.height)
             }
-
+            placeholder("Enter here...")
             value = input
             onChange = {
                 input = it
