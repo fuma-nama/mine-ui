@@ -53,6 +53,7 @@ abstract class UIElement<S: StyleContext>(val createStyle: () -> S): RenderNode(
 
     override fun onClick(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) {
         context.ui.focus(this)
+        context.prevent = true
         listener?.onClick(x, y, mouseButton, context)
     }
 

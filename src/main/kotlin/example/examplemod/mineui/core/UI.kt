@@ -43,44 +43,41 @@ class UI(var size: Size? = null, render: Component.() -> Unit) {
     }
 
     fun onClick(x: Double, y: Double, type: Int): Boolean {
-        fireEvent(
+        return fireEvent(
             EventType.Click,
             { element -> element.isIn(x, y) },
             { element, context ->
                 element.onClick(x, y, type, context)
             }
         )
-        return true
     }
 
     fun onType(char: Char, key: Int): Boolean {
-        state.focus?.let {
-            it.onType(char, key, GuiEventContext(this, it))
+        executeFocus { element, context ->
+            element.onType(char, key, context)
         }
 
         return true
     }
 
     fun onMouseReleased(mouseX: Double, mouseY: Double, mouseButton: Int): Boolean {
-        fireEvent(
+        return fireEvent(
             EventType.MouseRelease,
             { element -> element.isIn(mouseX, mouseY) },
             { element, context ->
                 element.onMouseReleased(mouseX, mouseY, mouseButton, context)
             }
         )
-        return true
     }
 
     fun onScroll(mouseX: Double, mouseY: Double, scroll: Double): Boolean {
-        fireEvent(
+        return fireEvent(
             EventType.MouseScroll,
             { element -> element.isIn(mouseX, mouseY) },
             { element, context ->
                 element.onScroll(mouseX, mouseY, scroll, context)
             }
         )
-        return true
     }
 
     fun onDrag(
@@ -91,26 +88,43 @@ class UI(var size: Size? = null, render: Component.() -> Unit) {
         dragY: Double
     ): Boolean {
 
-        fireEvent(
+        return fireEvent(
             EventType.MouseDrag,
             { element -> element.isIn(mouseX, mouseY) },
             { element, context ->
                 element.onDrag(mouseX, mouseY, mouseButton, dragX, dragY, context)
             }
         )
-        return true
+    }
+
+    fun onKeyPress(key: Int, o: Int, y: Int): Boolean {
+        return executeFocus { element, context ->
+            element.onKeyPressed(key, o, y, context)
+        }
+    }
+
+    fun executeFocus(action: (GUIListener, GuiEventContext) -> Unit): Boolean {
+        return state.focus?.let {
+            return execute(it, action).prevent
+        }?: false
+    }
+
+    fun execute(element: UIElement<*>, action: (GUIListener, GuiEventContext) -> Unit): GuiEventContext {
+        val context = GuiEventContext(this, element)
+        action(element, context)
+
+        return context
     }
 
     fun fireEvent(
         type: EventType,
         filter: (UIElement<*>) -> Boolean,
         action: (GUIListener, GuiEventContext) -> Unit
-    ) {
+    ): Boolean {
         var reflow = false
 
         fun execute(element: UIElement<*>): GuiEventContext {
-            val context = GuiEventContext(this, element)
-            action(element, context)
+            val context = execute(element, action)
 
             if (!reflow) {
                 reflow = context.reflow
@@ -139,13 +153,14 @@ class UI(var size: Size? = null, render: Component.() -> Unit) {
 
         val hooked = state.hooked[type]
 
-        if (hooked != null) {
-            execute(hooked)
+        val prevent = if (hooked != null) {
+            execute(hooked).prevent
         } else {
             next(this.root.element!!)
         }
 
         if (reflow) reflow()
+        return prevent
     }
 }
 
