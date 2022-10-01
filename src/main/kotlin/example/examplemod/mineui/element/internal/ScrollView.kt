@@ -38,6 +38,9 @@ enum class Scrolling {
 
 abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(create) {
     private var scrolling: Scrolling? = null
+    private val cutOverflow get() =
+        style.overflowX != Overflow.Visible || style.overflowY != Overflow.Visible
+
     override fun onClick(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) {
         super.onClick(x, y, mouseButton, context)
         if (scrolling != null) return
@@ -125,23 +128,22 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
         super.reflow(pos.minus(x = scrollX, y = scrollY), size.minusScrollbars())
     }
 
-    override fun draw(stack: DrawStack, size: Size) {
-        val cut = style.overflowX != Overflow.Visible || style.overflowY != Overflow.Visible
-        if (cut) {
-            stack.scissor(0, 0, size.width, size.height)
+    override fun drawChildren(stack: DrawStack) {
+        val size = absoluteSize
+
+        for (element in children) {
+            if (cutOverflow) {
+                //reset scissor in every render
+                stack.scissor(0, 0, size.width, size.height)
+            }
+
+            element.drawNode(stack)
         }
 
-        super.draw(stack, size)
-    }
-
-    override fun drawChildren(stack: DrawStack) {
-        super.drawChildren(stack)
         Gui.disableScissor()
-
         stack.lockState {
             stack.translated = absolutePosition
             val content = minSize
-            val size = absoluteSize
 
             if (overflowX) {
                 drawXScrollbar(stack, content, size)
