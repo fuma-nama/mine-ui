@@ -59,5 +59,5 @@ class ScrollbarStyle {
     var width: Int = 5
     var thumb: Color = Color.LIGHT_GRAY
     var track: Color = Color.DARK_GRAY
-    var speed: Int = 2
+    var speed: Double = 3.0
 }

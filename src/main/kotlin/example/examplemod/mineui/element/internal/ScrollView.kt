@@ -87,11 +87,14 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
     }
 
     override fun onScroll(x: Double, y: Double, scroll: Double, context: GuiEventContext) {
-        context.reflow = true
-        context.prevent = true
-        scrollY = (scrollY - (scroll.toInt() * style.scrollbar.speed))
-            .coerceAtMost(minSize.height - absoluteSize.height)
-            .coerceAtLeast(0)
+        if (overflowY) {
+            context.reflow = true
+            context.prevent = true
+            scrollY = (scrollY - (scroll * style.scrollbar.speed)).toInt()
+                .coerceAtMost(minSize.height - absoluteSize.height)
+                .coerceAtLeast(0)
+        }
+
         super.onScroll(x, y, scroll, context)
     }
 
