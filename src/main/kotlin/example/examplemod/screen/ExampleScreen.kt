@@ -106,6 +106,8 @@ fun example() = component {
                 Direction.Column -> Direction.Row
             }
         }
+
+        border(5, 5, Color.WHITE)
     }) { "Click Me" }
     label { "Hello MONEY" }
     simpleGrid({ columns(1, 1, 2); spacing(4) }) {

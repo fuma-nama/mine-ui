@@ -1,5 +1,6 @@
 package example.examplemod.mineui.element
 
+import example.examplemod.mineui.style.Border
 import example.examplemod.mineui.style.ImageFit
 import example.examplemod.mineui.style.Point4
 import example.examplemod.mineui.style.PosXY
@@ -11,6 +12,16 @@ import java.awt.Color
 
 interface BoxBuilder {
     var padding: Point4
+    var border: Border?
+
+    fun border(x: Int = 0, y: Int = 0, color: Color) = border(y, x, x, y, color)
+
+    fun border(top: Int = 0, left: Int = 0, right: Int = 0, bottom: Int = 0, color: Color) {
+        border = Border(
+            Point4(top, left, right, bottom),
+            color
+        )
+    }
 
     fun padding(top: Int, left: Int, right: Int, bottom: Int) {
         padding = Point4(top, left, right, bottom)
@@ -26,7 +37,8 @@ interface BoxBuilder {
 }
 
 open class BoxStyle: StyleContext(), BoxBuilder {
-    override var padding = Point4(0, 0, 0, 0)
+    override var border: Border? = null
+    override var padding = Point4.Empty
     open var background: Color? = null
     open var backgroundImage: ResourceLocation? = null
 
@@ -58,23 +70,38 @@ abstract class BoxElement<S: BoxStyle>(create: () -> S): UIElement<S>(create) {
 
     override fun getMinimumSize(): Size {
         val content = getContentSize()
+        val border = style.border?.size
 
-        return Size(
-            width = content.width + style.padding.px,
-            height = content.height + style.padding.py
+        return content.plus(
+            width = style.padding.px + (border?.px?: 0),
+            height = style.padding.py + (border?.py?: 0)
         )
     }
 
     override fun draw(stack: DrawStack, size: Size) {
+        var size = size
         val padding = style.padding
-        drawBackground(stack, size)
+        val border = style.border?.size
 
+        style.border?.let {
+            stack.drawBorder(0, 0, size.width, size.height, it.color, it.size)
+            stack.translate(it.size.left, it.size.top)
+
+            size = size.minus(
+                border?.px?: 0,
+                border?.py?: 0
+            )
+        }
+
+        drawBackground(stack, size)
         stack.translate(padding.left, padding.right)
 
-        drawContent(stack, Size(
-            size.width - style.padding.px,
-            size.height - style.padding.py
-        ))
+        drawContent(stack, size
+            .minus(
+                style.padding.px,
+                style.padding.py
+            )
+        )
     }
 
     fun drawBackground(stack: DrawStack, size: Size) {
