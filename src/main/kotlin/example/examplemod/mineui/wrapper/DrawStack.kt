@@ -2,6 +2,7 @@ package example.examplemod.mineui.wrapper
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
+import example.examplemod.mineui.style.Point4
 import example.examplemod.mineui.style.PosXY
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Font
@@ -10,11 +11,8 @@ import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import java.awt.Color
 
-data class Scissor(val x: Int, val y: Int, val width: Int, val height: Int)
-
 open class DrawStackDefault(val base: PoseStack): DrawStack {
     override var translated: PosXY = PosXY(0, 0)
-    override var scissor: Scissor? = null
 
     override fun drawText(font: Font, text: String, x: Float, y: Float, color: Int) {
         font.draw(base, text, translated.x + x, translated.y + y, color)
@@ -22,6 +20,10 @@ open class DrawStackDefault(val base: PoseStack): DrawStack {
 
     override fun drawText(font: Font, text: Component, x: Float, y: Float, color: Int) {
         font.draw(base, text, translated.x + x, translated.y + y, color)
+    }
+
+    override fun drawBorder(x: Int, y: Int, width: Int, height: Int, color: Int, thickness: Point4) {
+        base.drawBorder(x + translated.x, y + translated.y, width, height, color, thickness)
     }
 
     override fun drawImage(x: Int, y: Int, offsetX: Int, offsetY: Int, width: Int, height: Int, containerW: Int, containerH: Int, image: ResourceLocation) {
@@ -48,11 +50,6 @@ open class DrawStackDefault(val base: PoseStack): DrawStack {
             dx, dy, //x and y
             dx + width, dy + height //size
         )
-
-        scissor = Scissor(
-            dx, dy, //x and y
-            dx + width, dy + height
-        )
     }
 
     override fun scale(x: Float, y: Float, z: Float) {
@@ -69,7 +66,6 @@ open class DrawStackDefault(val base: PoseStack): DrawStack {
 
 interface DrawStack {
     var translated: PosXY
-    var scissor: Scissor?
 
     fun translate(x: Int = 0, y: Int = 0)  {
         translated = PosXY(translated.x + x, translated.y + y)
@@ -90,6 +86,9 @@ interface DrawStack {
 
     fun fillRect(x: Int, y: Int, width: Int, height: Int, color: Int)
 
+    fun drawBorder(x: Int, y: Int, width: Int, height: Int, color: Int, thickness: Point4)
+    fun drawBorder(x: Int, y: Int, width: Int, height: Int, color: Color, thickness: Point4) = drawBorder(x, y, width, height, color.rgb, thickness)
+
     fun drawImage(x: Int, y: Int, width: Int, height: Int, image: ResourceLocation) =
         drawImage(x, y, 0, 0, width, height, width, height, image)
 
@@ -100,7 +99,7 @@ interface DrawStack {
     fun scale(x: Float, y: Float, z: Float)
 }
 
-fun DrawStack.translate(render: () -> Unit) {
+fun DrawStack.lockState(render: () -> Unit) {
     val before = translated
     render()
 

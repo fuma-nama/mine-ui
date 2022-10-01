@@ -3,7 +3,7 @@ package example.examplemod.mineui.core
 import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.utils.Size
 import example.examplemod.mineui.wrapper.DrawStack
-import example.examplemod.mineui.wrapper.translate
+import example.examplemod.mineui.wrapper.lockState
 
 abstract class RenderNode {
     open val children: List<RenderNode> = emptyList()
@@ -17,7 +17,7 @@ abstract class RenderNode {
     open fun drawNode(stack: DrawStack) {
         stack.translated = absolutePosition
 
-        stack.translate {
+        stack.lockState {
             draw(stack, absoluteSize)
             drawChildren(stack)
         }

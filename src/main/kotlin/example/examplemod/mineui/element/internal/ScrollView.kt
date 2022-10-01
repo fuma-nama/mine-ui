@@ -9,7 +9,7 @@ import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.style.ScrollbarStyle
 import example.examplemod.mineui.utils.Size
 import example.examplemod.mineui.wrapper.DrawStack
-import example.examplemod.mineui.wrapper.translate
+import example.examplemod.mineui.wrapper.lockState
 import net.minecraft.client.gui.Gui
 
 open class ScrollViewStyle : BoxStyle() {
@@ -51,7 +51,7 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
         scrolling = when {
             overflowX && y.toInt() in top..bottom -> Scrolling.X
             overflowY && x.toInt() in left..right -> Scrolling.Y
-            else -> return
+            else -> null
         }
         if (scrolling != null) {
             hooked[EventType.MouseDrag] = this
@@ -88,6 +88,7 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
 
     override fun onScroll(x: Double, y: Double, scroll: Double, context: GuiEventContext) {
         context.reflow = true
+        context.prevent = true
         scrollY = (scrollY - (scroll.toInt() * style.scrollbar.speed))
             .coerceAtMost(minSize.height - absoluteSize.height)
             .coerceAtLeast(0)
@@ -134,10 +135,10 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
         super.drawChildren(stack)
         Gui.disableScissor()
 
-        stack.translate {
+        stack.lockState {
             stack.translated = absolutePosition
-            val size = absoluteSize
             val content = minSize
+            val size = absoluteSize
 
             if (overflowX) {
                 drawXScrollbar(stack, content, size)
