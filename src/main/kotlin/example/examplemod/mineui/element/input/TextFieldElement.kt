@@ -52,16 +52,13 @@ data class Cursor(
 class TextFieldElement : BoxElement<TextFieldStyle>(::TextFieldStyle) {
     private val splitter get() = style.font.splitter
     private val value get() = style.value
-    val helper = TextFieldHelper(
+    val helper = FieldHelperImpl(
         { value },
-        { style.onChange(it) },
-        TextFieldHelper.createClipboardGetter(Minecraft.getInstance()),
-        TextFieldHelper.createClipboardSetter(Minecraft.getInstance()),
-        { true }
+        { style.onChange(it) }
     )
 
-    var tick: Int = 0
-    var cursor by helper::cursorPos
+    var tick by helper::tick
+    val cursor by helper::cursorPos
     var selection by helper::selectionPos
 
     override fun onClick(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) {
@@ -73,8 +70,10 @@ class TextFieldElement : BoxElement<TextFieldStyle>(::TextFieldStyle) {
     }
 
     override fun onKeyPressed(key: Int, p_94746_: Int, p_94747_: Int, context: GuiEventContext) {
-        context.prevent = helper.keyPressed(key)
-        context.reflow = true
+        if (helper.keyPressed(key)) {
+            context.prevent = true
+            context.reflow = true
+        }
 
         super.onKeyPressed(key, p_94746_, p_94747_, context)
     }
@@ -95,8 +94,10 @@ class TextFieldElement : BoxElement<TextFieldStyle>(::TextFieldStyle) {
     }
 
     override fun onType(char: Char, key: Int, context: GuiEventContext) {
-        context.prevent = helper.charTyped(char)
-        context.reflow = true
+        if (helper.charTyped(char)) {
+            context.prevent = true
+            context.reflow = true
+        }
 
         super.onType(char, key, context)
     }
@@ -139,14 +140,28 @@ class TextFieldElement : BoxElement<TextFieldStyle>(::TextFieldStyle) {
         if (tick / style.cursor.step % 2 == 0 && focus) {
             stack.fillRect(cursorPos, 0, style.cursor.width, style.font.lineHeight, style.cursor.color)
         }
-
-        if (tick == Int.MAX_VALUE) {
-            tick = 0
-        } else {
-            tick++
-        }
-
+        helper.updateTick()
         RenderSystem.disableScissor()
+    }
+}
+
+class FieldHelperImpl(v: () -> String, setV: (String) -> Unit, validator: (String) -> Boolean = { true }) : TextFieldHelper(
+    v,
+    setV,
+    createClipboardGetter(Minecraft.getInstance()),
+    createClipboardSetter(Minecraft.getInstance()),
+    validator
+) {
+    var tick: Int = 0
+    var lastCursor: Int? = null
+
+    fun updateTick() {
+        tick = if (cursorPos != lastCursor || tick == Int.MAX_VALUE) {
+            lastCursor = cursorPos
+            0
+        } else {
+            tick + 1
+        }
     }
 }
 
