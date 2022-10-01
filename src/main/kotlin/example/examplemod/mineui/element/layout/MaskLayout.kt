@@ -5,7 +5,7 @@ import example.examplemod.mineui.element.ContainerStyle
 import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.utils.Size
 import example.examplemod.mineui.wrapper.DrawStack
-import example.examplemod.mineui.wrapper.translate
+import example.examplemod.mineui.wrapper.lockState
 import java.awt.Color
 
 class MaskLayoutStyle : ContainerStyle() {
@@ -27,7 +27,7 @@ class MaskLayout: Container<MaskLayoutStyle>(::MaskLayoutStyle) {
         val mask = style.maskColor
 
         if (mask != null) {
-            stack.translate {
+            stack.lockState {
                 stack.translated = absolutePosition
                 stack.fillRect(0, 0, size.width, size.height, mask)
             }

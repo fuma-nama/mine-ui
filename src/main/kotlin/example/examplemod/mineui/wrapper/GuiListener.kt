@@ -102,7 +102,7 @@ interface GUIListener {
 
     fun onScroll(x: Double, y: Double, scroll: Double, context: GuiEventContext) = Unit
 
-    fun onKeyPressed(p_94745_: Int, p_94746_: Int, p_94747_: Int, context: GuiEventContext) = Unit
+    fun onKeyPressed(key: Int, p_94746_: Int, p_94747_: Int, context: GuiEventContext) = Unit
 
     fun onKeyReleased(p_94750_: Int, p_94751_: Int, p_94752_: Int, context: GuiEventContext) = Unit
 }
