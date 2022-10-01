@@ -31,6 +31,6 @@ data class Point4F(
 }
 
 data class Border(
-    val size: Point4F,
+    val size: Point4,
     val color: Color
 )
