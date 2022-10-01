@@ -2,6 +2,8 @@ package example.examplemod.mineui
 
 import example.examplemod.mineui.core.Component
 import example.examplemod.mineui.element.*
+import example.examplemod.mineui.element.input.TextFieldElement
+import example.examplemod.mineui.element.input.TextFieldStyle
 import example.examplemod.mineui.element.layout.*
 import example.examplemod.mineui.utils.Size
 
@@ -95,4 +97,14 @@ fun Component.image(style: ImageStyle.() -> Unit) = image(style::class, style)
 
 fun Component.image(key: Any, style: ImageStyle.() -> Unit) = child(key) {
     element(::ImageElement, style)
+}
+fun Component.textField(
+    style: TextFieldStyle.() -> Unit,
+) = textField(style::class, style)
+
+fun Component.textField(
+    key: Any,
+    style: TextFieldStyle.() -> Unit,
+) = child(key) {
+    element(::TextFieldElement, style)
 }
