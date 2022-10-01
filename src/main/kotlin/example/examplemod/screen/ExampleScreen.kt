@@ -33,6 +33,16 @@ class ExampleGUI(p_96550_: Component) : Screen(p_96550_) {
         return root.onMouseReleased(x, y, button)
     }
 
+    override fun keyPressed(key: Int, p_96553_: Int, p_96554_: Int): Boolean {
+        val prevent = root.onKeyPress(key, p_96553_, p_96554_)
+
+        return if (prevent) {
+            true
+        }  else {
+            super.keyPressed(key, p_96553_, p_96554_)
+        }
+    }
+
     override fun mouseClicked(x: Double, y: Double, type: Int): Boolean {
         return root.onClick(x, y, type)
     }
@@ -159,6 +169,17 @@ fun example() = component {
         this.direction = direction
     }) {
         var input by useState { "Text" }
+        textField {
+            size {
+                Size(100, content.height)
+            }
+
+            value = input
+            onChange = {
+                input = it
+            }
+        }
+
         label({ bold(); italic() }) { "Hello World" }
 
         space { Size(10, 10) }
@@ -166,13 +187,6 @@ fun example() = component {
 
         absolute({ position(0, 0) }) {
             label { "Wow" }
-        }
-
-        textField {
-            text = input
-            onChange = {
-                input = it
-            }
         }
     }
 }
