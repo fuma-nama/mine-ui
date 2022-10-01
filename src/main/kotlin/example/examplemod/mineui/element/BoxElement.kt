@@ -116,4 +116,13 @@ abstract class BoxElement<S: BoxStyle>(create: () -> S): UIElement<S>(create) {
     }
 
     open fun drawContent(stack: DrawStack, size: Size) = Unit
+
+    val contentOffset: PosXY get() {
+        val border = style.border?.size
+
+        return PosXY(
+            x = style.padding.left + (border?.left?: 0),
+            y = style.padding.right + (border?.top?: 0)
+        )
+    }
 }
