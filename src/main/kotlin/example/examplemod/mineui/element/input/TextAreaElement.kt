@@ -145,7 +145,7 @@ class TextAreaElement : TextInput<TextAreaStyle>(::TextAreaStyle) {
 
     override fun drawInput(stack: DrawStack, size: Size, focus: Boolean) {
         val cursor = getCursorPosition()
-        val cursorLine = getLineIndex(this.cursor)
+        val cursorLine = getActualLine(this.cursor)
         val cursorSpace = style.font.lineHeight * 3
 
         if (value.isNotEmpty()) {
@@ -153,7 +153,7 @@ class TextAreaElement : TextInput<TextAreaStyle>(::TextAreaStyle) {
                 stack.translate(y = - (cursor.y + cursorSpace - size.height))
             }
 
-            val selectionLine = getLineIndex(this.selection)
+            val selectionLine = getActualLine(this.selection)
 
             val (selectStart, selectEnd) = IndexXY.leftRight(
                 IndexXY(this.cursor, cursorLine),
@@ -195,6 +195,16 @@ class TextAreaElement : TextInput<TextAreaStyle>(::TextAreaStyle) {
     fun getLineIndex(index: Int): Int {
         return lines.indexOfFirst {
             index in it.start..it.end
+        }
+    }
+
+    fun getActualLine(index: Int): Int {
+        val line = getLineIndex(index)
+
+        return if (value.getOrNull(index - 1) == '\n') {
+            line + 1
+        } else {
+            line
         }
     }
 
