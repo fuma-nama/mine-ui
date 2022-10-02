@@ -68,7 +68,7 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
         mouseButton: Int,
         dragX: Double,
         dragY: Double,
-        context: GuiEventContext
+        context: GuiEventContext,
     ) {
         when (scrolling) {
             Scrolling.X -> {
@@ -129,6 +129,7 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
     }
 
     override fun drawChildren(stack: DrawStack) {
+        stack.translated = absolutePosition
         val size = absoluteSize
 
         for (element in children) {
@@ -143,7 +144,6 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
         }
 
         Gui.disableScissor()
-        stack.translated = absolutePosition
 
         if (overflowX) {
             drawXScrollbar(stack, minSize, size)
@@ -159,8 +159,11 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
         val y = size.height - style.width
         stack.fillRect(0, y, size.width, style.width, style.track)
 
-        val scale = (size.width.toDouble() / content.width ).coerceAtMost(1.0)
-        stack.fillRect(scrollX, y, (size.width * scale).toInt(), style.width, style.thumb)
+        val bar = (size.width * size.width) / content.width
+        val extraWidth = content.width - size.width
+        val left = scrollX * (size.width - bar) / extraWidth
+
+        stack.fillRect(left, y, bar, style.width, style.thumb)
     }
 
     fun drawYScrollbar(stack: DrawStack, content: Size, size: Size) {
@@ -168,8 +171,12 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
         val x = size.width - style.width
         stack.fillRect(x, 0, style.width, size.height, style.track)
 
-        val scale = (size.height.toDouble() / content.height).coerceAtMost(1.0)
-        stack.fillRect(x, scrollY, style.width, (size.height * scale).toInt(), style.thumb)
+
+        val bar = (size.height * size.height) / content.height
+        val extraHeight = content.height - size.height
+        val top = scrollY * (size.height - bar) / extraHeight
+
+        stack.fillRect(x, top, style.width, bar, style.thumb)
     }
 
     private fun Size.minusScrollbars(): Size {
