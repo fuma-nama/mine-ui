@@ -105,3 +105,9 @@ fun DrawStack.lockState(render: () -> Unit) {
 
     translated = before
 }
+
+fun DrawStack.drawTextLines(font: Font, text: String, x: Float, y: Float, color: Int) {
+    for ((i, l) in text.lines().withIndex()) {
+        drawText(font, l, x, y + (i * font.lineHeight), color)
+    }
+}
