@@ -137,21 +137,20 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
                 stack.scissor(0, 0, size.width, size.height)
             }
 
-            element.drawNode(stack)
+            stack.lockState {
+                element.drawNode(stack)
+            }
         }
 
         Gui.disableScissor()
-        stack.lockState {
-            stack.translated = absolutePosition
-            val content = minSize
+        stack.translated = absolutePosition
 
-            if (overflowX) {
-                drawXScrollbar(stack, content, size)
-            }
+        if (overflowX) {
+            drawXScrollbar(stack, minSize, size)
+        }
 
-            if (overflowY) {
-                drawYScrollbar(stack, content, size)
-            }
+        if (overflowY) {
+            drawYScrollbar(stack, minSize, size)
         }
     }
 
