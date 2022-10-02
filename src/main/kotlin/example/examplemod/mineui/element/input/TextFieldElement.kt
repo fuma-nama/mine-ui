@@ -5,35 +5,16 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.Tesselator
 import com.mojang.blaze3d.vertex.VertexFormat
-import example.examplemod.mineui.core.GuiEventContext
-import example.examplemod.mineui.element.BoxElement
-import example.examplemod.mineui.element.BoxStyle
-import example.examplemod.mineui.element.LabelBuilder
+import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.utils.Size
 import example.examplemod.mineui.wrapper.DrawStack
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.font.TextFieldHelper
-import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.renderer.GameRenderer
-import net.minecraft.network.chat.Style
+import net.minecraft.network.chat.Component
 import java.awt.Color
 
-class TextFieldStyle : BoxStyle(), LabelBuilder {
-    override var textStyle: Style = Style.EMPTY
-    override var color: Color = Color.WHITE
-    override var font: Font = Minecraft.getInstance().font
-    var placeholder: String = ""
-    var placeholderColor: Color = Color.LIGHT_GRAY
-    var cursor: Cursor = Cursor()
-    var value: String = ""
-    var onChange: (String) -> Unit = {}
-
-    fun placeholder(text: String = placeholder, color: Color = placeholderColor) {
-        placeholder = text
-        placeholderColor = color
-    }
-
+class TextFieldStyle : TextInputStyle() {
     init {
         color = Color.WHITE
         background = Color.BLACK
@@ -42,92 +23,35 @@ class TextFieldStyle : BoxStyle(), LabelBuilder {
     }
 }
 
-data class Cursor(
-    val step: Int = 30,
-    val color: Color = Color.WHITE,
-    val width: Int = 1,
-    val selection: Color = Color.BLUE,
-)
-
-class TextFieldElement : BoxElement<TextFieldStyle>(::TextFieldStyle) {
+class TextFieldElement : TextInput<TextFieldStyle>(::TextFieldStyle) {
     private val splitter get() = style.font.splitter
-    private val value get() = style.value
-    val helper = FieldHelperImpl(
+    val value get() = style.value
+    override val helper = FieldHelperImpl(
         { value },
         { style.onChange(it) }
     )
 
-    var tick by helper::tick
-    val cursor by helper::cursorPos
-    var selection by helper::selectionPos
+    fun asComponent(value: String = this.value) = Component.literal(value).setStyle(style.textStyle)
 
-    override fun onClick(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) {
-        val ox = x - (contentOffset.x + absolutePosition.x)
-        val index = splitter.plainIndexAtWidth(value, ox.toInt(), style.textStyle).coerceIn(0, value.length)
-        helper.setCursorPos(index, Screen.hasShiftDown())
-
-        super.onClick(x, y, mouseButton, context)
-    }
-
-    override fun onKeyPressed(key: Int, p_94746_: Int, p_94747_: Int, context: GuiEventContext) {
-        if (helper.keyPressed(key)) {
-            context.prevent = true
-            context.reflow = true
-        }
-
-        super.onKeyPressed(key, p_94746_, p_94747_, context)
-    }
-
-    override fun onDrag(
-        mouseX: Double,
-        mouseY: Double,
-        mouseButton: Int,
-        dragX: Double,
-        dragY: Double,
-        context: GuiEventContext
-    ) {
+    override fun positionToIndex(mouseX: Double, mouseY: Double): Int {
         val ox = mouseX - (contentOffset.x + absolutePosition.x)
-        val index = splitter.plainIndexAtWidth(value, ox.toInt(), style.textStyle).coerceIn(0, value.length)
 
-        selection = index
-        super.onDrag(mouseX, mouseY, mouseButton, dragX, dragY, context)
+        return splitter.plainIndexAtWidth(value, ox.toInt(), style.textStyle).coerceIn(0, value.length)
     }
 
-    override fun onType(char: Char, key: Int, context: GuiEventContext) {
-        if (helper.charTyped(char)) {
-            context.prevent = true
-            context.reflow = true
-        }
-
-        super.onType(char, key, context)
-    }
-
-    override fun getContentSize(): Size {
-        return Size(
-            style.font.width(style.value),
-            style.font.lineHeight
-        )
-    }
-
-    fun indexToPosition(index: Int): Int {
-        return style.font.width(value.substring(0, index.coerceIn(0, value.length)))
-    }
-
-    override fun drawContent(stack: DrawStack, size: Size) {
-        stack.scissor(0, 0, size.width, size.height)
-        val focus = ui.state.focus == this
-        val cursorPos = indexToPosition(cursor)
+    override fun drawInput(stack: DrawStack, size: Size, focus: Boolean) {
         val cursorSpace = style.cursor.width + 5
+        val cursorPos = indexToPosition(cursor).x //ignore y
 
         if (value.isNotEmpty()) {
             if (cursorPos + cursorSpace > size.width) {
                 stack.translate(x = - (cursorPos + cursorSpace - size.width))
             }
 
-            stack.drawText(style.font, value, 0F, 0F, style.color)
+            stack.drawText(style.font, asComponent(), 0F, 0F, style.color)
 
             if (helper.isSelecting) {
-                val selectionPos = indexToPosition(selection)
+                val selectionPos = indexToPosition(selection).x
                 val left = cursorPos.coerceAtMost(selectionPos)
                 val right = cursorPos.coerceAtLeast(selectionPos)
 
@@ -140,8 +64,15 @@ class TextFieldElement : BoxElement<TextFieldStyle>(::TextFieldStyle) {
         if (tick / style.cursor.step % 2 == 0 && focus) {
             stack.fillRect(cursorPos, 0, style.cursor.width, style.font.lineHeight, style.cursor.color)
         }
-        helper.updateTick()
-        RenderSystem.disableScissor()
+    }
+
+    override fun indexToPosition(index: Int): PosXY {
+        return PosXY(
+            style.font.width(asComponent(
+                value.substring(0, index.coerceIn(0, value.length))
+            )),
+            0
+        )
     }
 }
 
