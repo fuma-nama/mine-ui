@@ -2,6 +2,8 @@ package example.examplemod.mineui
 
 import example.examplemod.mineui.core.Component
 import example.examplemod.mineui.element.*
+import example.examplemod.mineui.element.input.TextAreaElement
+import example.examplemod.mineui.element.input.TextAreaStyle
 import example.examplemod.mineui.element.input.TextFieldElement
 import example.examplemod.mineui.element.input.TextFieldStyle
 import example.examplemod.mineui.element.layout.*
@@ -107,4 +109,17 @@ fun Component.textField(
     style: TextFieldStyle.() -> Unit,
 ) = child(key) {
     element(::TextFieldElement, style)
+}
+
+fun Component.textArea(
+    style: TextAreaStyle.() -> Unit
+) = child(style::class) {
+    element(::TextAreaElement, style)
+}
+
+fun Component.textArea(
+    key: Any,
+    style: TextAreaStyle.() -> Unit = {}
+) = child(key) {
+    element(::TextAreaElement, style)
 }

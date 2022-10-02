@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack
 import example.examplemod.ExampleMod
 import example.examplemod.mineui.*
 import example.examplemod.mineui.core.UI
+import example.examplemod.mineui.element.input.Cursor
 import example.examplemod.mineui.element.layout.StackLayout
 import example.examplemod.mineui.hooks.createContext
 import example.examplemod.mineui.hooks.useContext
@@ -158,6 +159,17 @@ fun example() = component {
             box({ background = Color.GREEN; size(30, 50) }) {}
         }
     }
+    var description by useState { "" }
+    textArea {
+        value = description
+        onChange = {
+            description = it
+        }
+        placeholder("Hello World\nI am MONEY")
+        size {
+            Size(500, 500)
+        }
+    }
 
     stack({
         size {
@@ -170,6 +182,10 @@ fun example() = component {
     }) {
         var input by useState { "Text" }
         textField {
+            cursor = Cursor(
+                selection = Color.pink,
+                color = Color.pink
+            )
             size {
                 Size(100, content.height)
             }
