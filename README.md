@@ -4,7 +4,7 @@ A high-performance Functional Programming style UI Framework for Minecraft Forge
 ## Todo List
 * Add Scrollbar when Container overflows
 * ~~Image Element and Background Images~~
-* Text Fields, both single line and multi-line
+* ~~Text Fields, both single line and multi-line~~
 * Supports RichText (Minecraft Chat's `Component` class)
 * Filter such as blur and brightness
 * Supports Opacity property
