@@ -73,14 +73,18 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
         when (scrolling) {
             Scrolling.X -> {
                 context.reflow = true
-                scrollX = (scrollX + dragX.toInt())
-                    .coerceAtMost(minSize.width - absoluteSize.width)
+                val left = absoluteSize.width - thumbWidth
+                val moved: Double = dragX / left
+                scrollX = (scrollX + (maxScrollX * moved).toInt())
+                    .coerceAtMost(maxScrollX)
                     .coerceAtLeast(0)
             }
             Scrolling.Y -> {
                 context.reflow = true
-                scrollY = (scrollY + dragY.toInt())
-                    .coerceAtMost(minSize.height - absoluteSize.height)
+                val top = absoluteSize.height - thumbHeight
+                val moved: Double = dragY / top
+                scrollY = (scrollY + (maxScrollY * moved).toInt())
+                    .coerceAtMost(maxScrollY)
                     .coerceAtLeast(0)
             }
             else -> {}
@@ -94,7 +98,7 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
             context.reflow = true
             context.prevent = true
             scrollY = (scrollY - (scroll * style.scrollbar.speed)).toInt()
-                .coerceAtMost(minSize.height - absoluteSize.height)
+                .coerceAtMost(maxScrollY)
                 .coerceAtLeast(0)
         }
 
@@ -159,7 +163,7 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
         val y = size.height - style.width
         stack.fillRect(0, y, size.width, style.width, style.track)
 
-        val bar = (size.width * size.width) / content.width
+        val bar = thumbWidth
         val extraWidth = content.width - size.width
         val left = scrollX * (size.width - bar) / extraWidth
 
@@ -171,12 +175,29 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
         val x = size.width - style.width
         stack.fillRect(x, 0, style.width, size.height, style.track)
 
-
-        val bar = (size.height * size.height) / content.height
+        val bar = thumbHeight
         val extraHeight = content.height - size.height
         val top = scrollY * (size.height - bar) / extraHeight
 
         stack.fillRect(x, top, style.width, bar, style.thumb)
+    }
+
+    val thumbWidth get(): Int {
+        val size = absoluteSize
+        return (size.width * size.width) / minSize.width
+    }
+
+    val thumbHeight get(): Int {
+        val size = absoluteSize
+        return (size.height * size.height) / minSize.height
+    }
+
+    val maxScrollX get(): Int {
+        return minSize.width - absoluteSize.width
+    }
+
+    val maxScrollY get(): Int {
+        return minSize.height - absoluteSize.height
     }
 
     private fun Size.minusScrollbars(): Size {
