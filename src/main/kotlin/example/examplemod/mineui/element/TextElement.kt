@@ -1,11 +1,14 @@
 package example.examplemod.mineui.element
 
+import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.utils.Size
 import example.examplemod.mineui.wrapper.DrawStack
+import example.examplemod.mineui.wrapper.drawTextLines
+import example.examplemod.mineui.wrapper.minSize
+import example.examplemod.mineui.wrapper.splitLines
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Font
-import net.minecraft.network.chat.ComponentContents
-import net.minecraft.network.chat.MutableComponent
+import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import java.awt.Color
 
@@ -39,23 +42,21 @@ class LabelStyle : StyleContext(), LabelBuilder {
 }
 
 class TextElement : UIElement<LabelStyle>(::LabelStyle) {
+    lateinit var content: List<Component>
     var text: String = ""
 
-    private fun content() = MutableComponent.create(ComponentContents.EMPTY).also {
-        it.append(text)
-        it.style = style.textStyle
+    override fun reflow(pos: PosXY, size: Size) {
+        super.reflow(pos, size)
+        content = style.font.splitLines(text, style.textStyle, size.width)
     }
 
     override fun getMinimumSize(): Size {
-        return Size(
-            width = style.font.width(content()),
-            height = style.font.lineHeight
-        )
+        return style.font.minSize(text, style.textStyle)
     }
 
     override fun draw(stack: DrawStack, size: Size) {
         with (style) {
-            stack.drawText(font, content(), 0F, 0F, color)
+            stack.drawTextLines(0F, 0F, font, content, color)
         }
     }
 }
