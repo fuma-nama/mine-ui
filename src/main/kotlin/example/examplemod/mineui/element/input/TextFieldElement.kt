@@ -26,6 +26,7 @@ class TextFieldStyle : TextInputStyle() {
 class TextFieldElement : TextInput<TextFieldStyle>(::TextFieldStyle) {
     private val splitter get() = style.font.splitter
     val value get() = style.value
+    var offsetX: Int = 0
     override val helper = FieldHelperImpl(
         { value },
         { style.onChange(it) }
@@ -34,7 +35,7 @@ class TextFieldElement : TextInput<TextFieldStyle>(::TextFieldStyle) {
     fun asComponent(value: String = this.value) = Component.literal(value).setStyle(style.textStyle)
 
     override fun positionToIndex(mouseX: Double, mouseY: Double): Int {
-        val ox = mouseX - (contentOffset.x + absolutePosition.x)
+        val ox = mouseX - (contentOffset.x + absolutePosition.x) - offsetX
 
         return splitter.plainIndexAtWidth(value, ox.toInt(), style.textStyle).coerceIn(0, value.length)
     }
@@ -45,7 +46,8 @@ class TextFieldElement : TextInput<TextFieldStyle>(::TextFieldStyle) {
 
         if (value.isNotEmpty()) {
             if (cursorPos + cursorSpace > size.width) {
-                stack.translate(x = - (cursorPos + cursorSpace - size.width))
+                this.offsetX = - (cursorPos + cursorSpace - size.width)
+                stack.translate(x = offsetX)
             }
 
             stack.drawText(style.font, asComponent(), 0F, 0F, style.color)
