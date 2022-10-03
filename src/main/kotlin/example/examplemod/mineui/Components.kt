@@ -2,10 +2,7 @@ package example.examplemod.mineui
 
 import example.examplemod.mineui.core.Component
 import example.examplemod.mineui.element.*
-import example.examplemod.mineui.element.input.TextAreaElement
-import example.examplemod.mineui.element.input.TextAreaStyle
-import example.examplemod.mineui.element.input.TextFieldElement
-import example.examplemod.mineui.element.input.TextFieldStyle
+import example.examplemod.mineui.element.input.*
 import example.examplemod.mineui.element.layout.*
 import example.examplemod.mineui.utils.Size
 
@@ -122,4 +119,9 @@ fun Component.textArea(
     style: TextAreaStyle.() -> Unit = {}
 ) = child(key) {
     element(::TextAreaElement, style)
+}
+
+fun Component.checkbox(style: CheckboxStyle.() -> Unit) = checkbox(style::class, style)
+fun Component.checkbox(key: Any, style: CheckboxStyle.() -> Unit = {}) = child(key) {
+    element(::CheckboxElement, style)
 }

@@ -167,8 +167,28 @@ fun example() = component {
         }
         placeholder("Hello World\nI am MONEY")
         size {
-            Size(500, 500)
+            Size(500, 100)
         }
+    }
+    label { description }
+
+    checkbox {
+        var checked by useState { false }
+
+        value = checked
+        onChange = {
+            checked = it
+        }
+    }
+
+    checkbox {
+        var checked by useState { false }
+
+        value = checked
+        onChange = {
+            checked = it
+        }
+        size(30, 30)
     }
 
     stack({
