@@ -164,13 +164,13 @@ class TextAreaElement : TextInput<TextAreaStyle>(::TextAreaStyle) {
                 val text = line.trimmed
 
                 stack.drawText(style.font, text, 0F, line.y.toFloat(), style.color)
-                if (helper.isSelecting && i in selectStart.y..selectEnd.y) {
+                if (helper.isSelecting && i in selectStart.line..selectEnd.line) {
                     val left = when (i) {
-                        selectStart.y -> indexToPosition(line, selectStart.x).x
+                        selectStart.line -> indexToPosition(line, selectStart.index).x
                         else -> 0
                     }
                     val right = when (i) {
-                        selectEnd.y -> indexToPosition(line, selectEnd.x).x
+                        selectEnd.line -> indexToPosition(line, selectEnd.index).x
                         else -> size.width
                     }
 
@@ -214,12 +214,12 @@ class TextAreaElement : TextInput<TextAreaStyle>(::TextAreaStyle) {
     val LineData.trimmed: String get() = this.value.trimEnd('\n')
 }
 
-data class IndexXY(val x: Int, val y: Int) {
+data class IndexXY(val index: Int, val line: Int) {
     fun greaterThan(other: IndexXY): Boolean {
-        return if (this.y == other.y) {
-            this.x > other.x
+        return if (this.line == other.line) {
+            this.index > other.index
         } else {
-            this.y > other.y
+            this.line > other.line
         }
     }
 
