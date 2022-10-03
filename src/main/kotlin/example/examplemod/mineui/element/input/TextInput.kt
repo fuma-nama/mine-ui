@@ -16,9 +16,9 @@ import java.awt.Color
 
 data class Cursor(
     val step: Int = 30,
-    val color: Color = Color.WHITE,
+    val color: Color = Color.CYAN,
     val width: Int = 1,
-    val selection: Color = Color.BLUE,
+    val selection: Color = Color.CYAN,
 )
 
 open class TextInputStyle : BoxStyle(), LabelBuilder {
