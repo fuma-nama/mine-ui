@@ -66,23 +66,21 @@ fun DrawStack.drawCheckedIcon(checked: Boolean, size: Size, icon: CheckIcon) {
         is DefaultIcon -> {
             fillRect(0, 0, size.width, size.height, icon.background)
 
-            if (checked) {
-                RenderSystem.enableBlend()
-                RenderSystem.defaultBlendFunc()
-                RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
-                    GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
-                val scaleX = size.width / 20.0
-                val scaleY = size.height / 20.0
+            RenderSystem.enableBlend()
+            RenderSystem.defaultBlendFunc()
+            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
+                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
+            val scaleX = size.width / 20.0
+            val scaleY = size.height / 20.0
 
-                drawImage(
-                    0, 0,
-                    (20 * scaleX).toInt(),
-                    (20 * scaleY).toInt(),
-                    size.width, size.height,
-                    (64 * scaleX).toInt(), (64 * scaleY).toInt(),
-                    DefaultIcon.Texture
-                )
-            }
+            drawImage(
+                0, 0,
+                (20 * scaleX).toInt(),
+                if (checked) (20 * scaleY).toInt() else 0,
+                size.width, size.height,
+                (64 * scaleX).toInt(), (64 * scaleY).toInt(),
+                DefaultIcon.Texture
+            )
         }
     }
 }
