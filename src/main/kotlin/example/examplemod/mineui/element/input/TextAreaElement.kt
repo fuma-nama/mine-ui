@@ -5,6 +5,7 @@ import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.utils.Size
 import example.examplemod.mineui.wrapper.DrawStack
 import example.examplemod.mineui.wrapper.drawTextLines
+import example.examplemod.mineui.wrapper.minSize
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Style
 import org.lwjgl.glfw.GLFW
@@ -32,6 +33,17 @@ class TextAreaElement : TextInput<TextAreaStyle>(::TextAreaStyle) {
         { style.value },
         { style.onChange(it) }
     )
+
+    /**
+     * Specifies index of the line at the top if text overflows
+     */
+    var lineOffset: Int = 0
+
+    override fun getContentSize(): Size {
+        return style.font.minSize(value, style.textStyle).plus(
+            width = style.cursor.width
+        )
+    }
 
     override fun onKeyPressed(key: Int, p_94746_: Int, p_94747_: Int, context: GuiEventContext) {
         val prevent = when (key) {
@@ -104,8 +116,8 @@ class TextAreaElement : TextInput<TextAreaStyle>(::TextAreaStyle) {
         )
     }
 
-    override fun reflow(pos: PosXY, size: Size) {
-        super.reflow(pos, size)
+    override fun reflowContent(pos: PosXY, padding: PosXY, size: Size) {
+        super.reflowContent(pos, padding, size)
 
         val lines = arrayListOf<LineData>()
         splitter.splitLines(value,
@@ -118,18 +130,20 @@ class TextAreaElement : TextInput<TextAreaStyle>(::TextAreaStyle) {
                 start, end
             )
         }
-
         this.lines = lines
     }
 
     override fun positionToIndex(mouseX: Double, mouseY: Double): Int {
-        val ox = mouseX - (contentOffset.x + absolutePosition.x)
-        val oy = mouseY - (contentOffset.y + absolutePosition.y)
+        val pos =  absolutePosition + contentOffset
+        val ox = mouseX - pos.x
+        val oy = mouseY - pos.y - (lineOffset * style.font.lineHeight)
         val line = lines.findLast {
             oy.toInt() in it.y..(it.y + style.font.lineHeight)
-        }?: return value.length
+        }
 
-        return line.start + splitter.plainIndexAtWidth(line.trimmed, ox.toInt(), style.textStyle)
+        return if (line != null) {
+            line.start + splitter.plainIndexAtWidth(line.trimmed, ox.toInt(), style.textStyle)
+        } else if (mouseY <= pos.y) 0 else value.length
     }
 
     fun getCursorPosition(): PosXY {
@@ -145,15 +159,15 @@ class TextAreaElement : TextInput<TextAreaStyle>(::TextAreaStyle) {
 
     override fun drawInput(stack: DrawStack, size: Size, focus: Boolean) {
         val cursor = getCursorPosition()
-        val cursorLine = getActualLine(this.cursor)
-        val cursorSpace = style.font.lineHeight * 3
+        val lineHeight = style.font.lineHeight
 
         if (value.isNotEmpty()) {
-            if (cursor.y + cursorSpace > size.height) {
-                stack.translate(y = - (cursor.y + cursorSpace - size.height))
-            }
-
+            val cursorLine = getActualLine(this.cursor)
             val selectionLine = getActualLine(this.selection)
+            val maxLine = size.height / lineHeight
+
+            this.lineOffset = (maxLine - cursorLine - 1).coerceAtMost(0)
+            stack.translate(y = this.lineOffset * lineHeight)
 
             val (selectStart, selectEnd) = IndexXY.leftRight(
                 IndexXY(this.cursor, cursorLine),
@@ -174,7 +188,7 @@ class TextAreaElement : TextInput<TextAreaStyle>(::TextAreaStyle) {
                         else -> size.width
                     }
 
-                    stack.drawHighlight(left, line.y, right - left, style.font.lineHeight, style.cursor.selection.rgb)
+                    stack.drawHighlight(left, line.y, right - left, lineHeight, style.cursor.selection.rgb)
                 }
             }
         } else {
@@ -182,7 +196,7 @@ class TextAreaElement : TextInput<TextAreaStyle>(::TextAreaStyle) {
         }
 
         if (tick / style.cursor.step % 2 == 0 && focus) {
-            stack.fillRect(cursor.x, cursor.y, style.cursor.width, style.font.lineHeight, style.cursor.color)
+            stack.fillRect(cursor.x, cursor.y, style.cursor.width, lineHeight, style.cursor.color)
         }
     }
 
