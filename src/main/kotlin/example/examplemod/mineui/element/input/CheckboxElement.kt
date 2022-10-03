@@ -8,27 +8,57 @@ import example.examplemod.mineui.element.UIElement
 import example.examplemod.mineui.utils.Size
 import example.examplemod.mineui.wrapper.DrawStack
 import net.minecraft.resources.ResourceLocation
-import java.awt.Color
+import kotlin.math.roundToInt
 
-sealed interface CheckIcon
-data class ImageIcon(val checked: ResourceLocation? = null, val unchecked: ResourceLocation? = null): CheckIcon
+fun interface CheckIcon {
+    fun draw(stack: DrawStack, checked: Boolean, size: Size)
+}
 
-data class DefaultIcon(
-    val color: Color = Color.WHITE,
-    val background: Color = Color.BLACK,
-): CheckIcon {
-    companion object {
-        val Texture = ResourceLocation("textures/gui/checkbox.png")
+data class ImageIcon(val checked: ResourceLocation? = null, val unchecked: ResourceLocation? = null): CheckIcon {
+    override fun draw(stack: DrawStack, checked: Boolean, size: Size) {
+        val image = if (checked) this.checked else this.unchecked
+
+        if (image != null) {
+            stack.drawImage(0, 0, size.width, size.height, image)
+        }
+    }
+}
+
+object DefaultIcon: CheckIcon {
+    val Texture = ResourceLocation("textures/gui/checkbox.png")
+
+    override fun draw(stack: DrawStack, checked: Boolean, size: Size) {
+        RenderSystem.enableBlend()
+        RenderSystem.defaultBlendFunc()
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
+            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
+        val scaleX = size.width / 20.0F
+        val scaleY = size.height / 20.0F
+
+        stack.drawImage(
+            0, 0,
+            20F * scaleX,
+            if (checked) 20F * scaleY else 0F,
+            size.width, size.height,
+            (64 * scaleX).roundToInt(), (64 * scaleY).roundToInt(),
+            Texture
+        )
     }
 }
 
 class CheckboxStyle : StyleContext() {
     var value: Boolean = false
     var onChange: (Boolean) -> Unit = {}
-    var icon: CheckIcon = DefaultIcon()
+    var icon: CheckIcon = DefaultIcon
 
-    fun icon(color: Color = Color.WHITE, background: Color = Color.BLACK) {
-        this.icon = DefaultIcon(color, background)
+    fun defaultIcon() {
+        this.icon = DefaultIcon
+    }
+
+    fun icon(icon: (stack: DrawStack, checked: Boolean, size: Size) -> Unit) {
+        this.icon = CheckIcon { stack, checked, size ->
+            icon(stack, checked, size)
+        }
     }
 
     fun icon(checked: ResourceLocation, unchecked: ResourceLocation) {
@@ -42,7 +72,7 @@ class CheckboxStyle : StyleContext() {
 
 class CheckboxElement : UIElement<CheckboxStyle>(::CheckboxStyle) {
     override fun draw(stack: DrawStack, size: Size) {
-        stack.drawCheckedIcon(style.value, size, style.icon)
+        style.icon.draw(stack, style.value, size)
     }
 
     override fun onClick(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) {
@@ -52,35 +82,4 @@ class CheckboxElement : UIElement<CheckboxStyle>(::CheckboxStyle) {
     }
 
     override fun getMinimumSize() = Size.Empty
-}
-
-fun DrawStack.drawCheckedIcon(checked: Boolean, size: Size, icon: CheckIcon) {
-    when (icon) {
-        is ImageIcon -> {
-            val image = if (checked) icon.checked else icon.unchecked
-
-            if (image != null) {
-                drawImage(0, 0, size.width, size.height, image)
-            }
-        }
-        is DefaultIcon -> {
-            fillRect(0, 0, size.width, size.height, icon.background)
-
-            RenderSystem.enableBlend()
-            RenderSystem.defaultBlendFunc()
-            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
-            val scaleX = size.width / 20.0
-            val scaleY = size.height / 20.0
-
-            drawImage(
-                0, 0,
-                (20 * scaleX).toInt(),
-                if (checked) (20 * scaleY).toInt() else 0,
-                size.width, size.height,
-                (64 * scaleX).toInt(), (64 * scaleY).toInt(),
-                DefaultIcon.Texture
-            )
-        }
-    }
 }

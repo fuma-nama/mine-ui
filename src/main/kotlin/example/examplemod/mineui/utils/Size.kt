@@ -134,7 +134,7 @@ fun DrawStack.drawImage(fit: ImageFit, size: Size, src: ResourceLocation) {
             val scaledW = originalW * minScale
             val scaledH = originalH * minScale
 
-            drawImage(0, 0, 0, 0, size.width, size.height, scaledW.toInt(), scaledH.toInt(), src)
+            drawImage(0, 0, 0f, 0f, size.width, size.height, scaledW.toInt(), scaledH.toInt(), src)
         }
     }
 }
