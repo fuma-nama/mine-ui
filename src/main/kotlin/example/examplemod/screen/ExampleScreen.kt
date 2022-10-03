@@ -95,8 +95,8 @@ fun example() = component {
     element(::StackLayout) {
         background = Color.RED
         padding(4)
-        backgroundImage = meme
-        backgroundFit = ImageFit.Contain
+        backgroundImage = sky
+        backgroundFit = ImageFit.Cover
         gap = 5
         overflow(Overflow.Scroll)
     }
@@ -105,7 +105,7 @@ fun example() = component {
         test(0)
     }
     if (toggle) {
-        image { src = sky; width = 170; height = 100; objectFit = ImageFit.Cover }
+        image { src = meme; width = 170; height = 100; objectFit = ImageFit.Cover }
     }
 
     button({
@@ -120,6 +120,70 @@ fun example() = component {
 
         border(5, 5, Color.WHITE)
     }) { "Click Me" }
+
+    column({ background = Color.DARK_GRAY; gap = 5; padding(4) }) {
+        var description by useState { "" }
+        label { description }
+        textArea {
+            value = description
+            onChange = {
+                description = it
+            }
+            placeholder("Type Something...")
+            size {
+                Size(500, 30)
+            }
+        }
+
+        row({ gap = 5 }) {
+
+            checkbox {
+                var checked by useState { false }
+
+                value = checked
+                onChange = {
+                    checked = it
+                }
+            }
+            label { "Enable Notifications" }
+        }
+
+        stack({
+            size {
+                Size(content.width * 2, content.height)
+            }
+            alignY = VerticalAlign.Center
+            padding(10); gap = 5
+            background = Color.BLACK
+            this.direction = direction
+        }) {
+            var input by useState { "Text" }
+            textField {
+                cursor = Cursor(
+                    selection = Color.pink,
+                    color = Color.pink
+                )
+                size {
+                    Size(100, content.height)
+                }
+                placeholder("Enter here...")
+                value = input
+                onChange = {
+                    input = it
+                }
+            }
+
+            label({ bold(); italic() }) { "Hello World" }
+
+            space { Size(10, 10) }
+            label { "Hello Kane" }
+
+            absolute({ position(0, 0) }) {
+                label { "Wow" }
+            }
+        }
+    }
+
     label { "Hello MONEY" }
     simpleGrid({ columns(1, 1, 2); spacing(4) }) {
         box({
@@ -157,72 +221,6 @@ fun example() = component {
                 label { if (toggle) "Hello World, I am Gay" else "MONEY" }
             }
             box({ background = Color.GREEN; size(30, 50) }) {}
-        }
-    }
-    var description by useState { "" }
-    textArea {
-        value = description
-        onChange = {
-            description = it
-        }
-        placeholder("Hello World\nI am MONEY")
-        size {
-            Size(500, 100)
-        }
-    }
-    label { description }
-
-    checkbox {
-        var checked by useState { false }
-
-        value = checked
-        onChange = {
-            checked = it
-        }
-    }
-
-    checkbox {
-        var checked by useState { false }
-
-        value = checked
-        onChange = {
-            checked = it
-        }
-        size(30, 30)
-    }
-
-    stack({
-        size {
-             Size(content.width * 2, content.height)
-        }
-        alignY = VerticalAlign.Center
-        padding(10); gap = 5
-        background = Color.BLACK
-        this.direction = direction
-    }) {
-        var input by useState { "Text" }
-        textField {
-            cursor = Cursor(
-                selection = Color.pink,
-                color = Color.pink
-            )
-            size {
-                Size(100, content.height)
-            }
-            placeholder("Enter here...")
-            value = input
-            onChange = {
-                input = it
-            }
-        }
-
-        label({ bold(); italic() }) { "Hello World" }
-
-        space { Size(10, 10) }
-        label { "Hello Kane" }
-
-        absolute({ position(0, 0) }) {
-            label { "Wow" }
         }
     }
 }
