@@ -35,6 +35,10 @@ open class TextInputStyle : BoxStyle(), LabelBuilder {
         placeholder = text
         placeholderColor = color
     }
+
+    init {
+        requireFocus = true
+    }
 }
 
 abstract class TextInput<S: TextInputStyle>(create: () -> S)  : BoxElement<S>(create) {

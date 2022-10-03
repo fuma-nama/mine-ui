@@ -20,7 +20,7 @@ class UI(var size: Size? = null, render: Component.() -> Unit) {
         reflow()
     }
 
-    fun focus(element: UIElement<*>) {
+    fun focus(element: UIElement<*>?) {
         this.state.focus = element
     }
 

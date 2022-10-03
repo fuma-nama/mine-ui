@@ -30,6 +30,10 @@ open class ScrollViewStyle : BoxStyle() {
     fun scrollbar(init: ScrollbarStyle.() -> Unit) {
         scrollbar = ScrollbarStyle().apply(init)
     }
+
+    init {
+        requireFocus = true
+    }
 }
 
 enum class Scrolling {

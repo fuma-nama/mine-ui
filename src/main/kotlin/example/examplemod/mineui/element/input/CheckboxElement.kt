@@ -66,6 +66,7 @@ class CheckboxStyle : StyleContext() {
     }
 
     init {
+        requireFocus = true
         size(15, 15)
     }
 }

@@ -14,6 +14,7 @@ import example.examplemod.mineui.wrapper.GuiListenerBuilder
 
 open class StyleContext: GuiListenerBuilder() {
     var position: PositionInput = Relative
+    var requireFocus: Boolean = false
 
     open var size: SizeInput = FitContent
 
@@ -59,8 +60,13 @@ abstract class UIElement<S: StyleContext>(val createStyle: () -> S): RenderNode(
     }
 
     override fun onClick(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) {
-        ui.focus(this)
-        context.prevent = true
+        if (style.requireFocus) {
+            ui.focus(this)
+            context.prevent = true
+        } else {
+            ui.focus(null)
+        }
+
         listener?.onClick(x, y, mouseButton, context)
     }
 
