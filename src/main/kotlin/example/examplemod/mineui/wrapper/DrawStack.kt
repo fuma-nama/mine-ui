@@ -30,7 +30,17 @@ open class DrawStackDefault(val base: PoseStack): DrawStack {
         base.drawBorder(x + translated.x, y + translated.y, width, height, color, thickness)
     }
 
-    override fun drawImage(x: Int, y: Int, offsetX: Int, offsetY: Int, width: Int, height: Int, containerW: Int, containerH: Int, image: ResourceLocation) {
+    override fun drawImage(
+        x: Int,
+        y: Int,
+        offsetX: Float,
+        offsetY: Float,
+        width: Int,
+        height: Int,
+        containerW: Int,
+        containerH: Int,
+        image: ResourceLocation,
+    ) {
         val texture = Minecraft.getInstance().textureManager.getTexture(image)
         texture.bind()
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -40,8 +50,8 @@ open class DrawStackDefault(val base: PoseStack): DrawStack {
             translated.x + x,
             translated.y + y,
             0, //z offset
-            offsetX.toFloat(),
-            offsetY.toFloat(),
+            offsetX,
+            offsetY,
             width, height,
             containerW, containerH
         )
@@ -94,9 +104,9 @@ interface DrawStack {
     fun drawBorder(x: Int, y: Int, width: Int, height: Int, color: Color, thickness: Point4) = drawBorder(x, y, width, height, color.rgb, thickness)
 
     fun drawImage(x: Int, y: Int, width: Int, height: Int, image: ResourceLocation) =
-        drawImage(x, y, 0, 0, width, height, width, height, image)
+        drawImage(x, y, 0f, 0f, width, height, width, height, image)
 
-    fun drawImage(x: Int, y: Int, offsetX: Int, offsetY: Int, width: Int, height: Int, containerW: Int, containerH: Int, image: ResourceLocation)
+    fun drawImage(x: Int, y: Int, offsetX: Float, offsetY: Float, width: Int, height: Int, containerW: Int, containerH: Int, image: ResourceLocation)
 
     fun scissor(x: Int, y: Int, width: Int, height: Int)
 
