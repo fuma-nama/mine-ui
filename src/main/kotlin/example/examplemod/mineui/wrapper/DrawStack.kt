@@ -4,10 +4,14 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
 import example.examplemod.mineui.style.Point4
 import example.examplemod.mineui.style.PosXY
+import example.examplemod.mineui.utils.Size
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.Gui
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.FormattedText
+import net.minecraft.network.chat.MutableComponent
+import net.minecraft.network.chat.Style
 import net.minecraft.resources.ResourceLocation
 import java.awt.Color
 
@@ -104,6 +108,41 @@ fun DrawStack.lockState(render: () -> Unit) {
     render()
 
     translated = before
+}
+
+fun Font.size(lines: List<Component>): Size {
+    val maxW =  lines.maxOfOrNull { width(it) }
+
+    return Size(
+        maxW?: 0,
+        lineHeight * lines.size
+    )
+}
+
+fun Font.minSize(text: String, style: Style): Size {
+    val lines = text.lines()
+    val maxW =  lines.maxOfOrNull {
+        splitter.stringWidth(FormattedText.of(it, style)).toInt()
+    }
+
+    return Size(
+        maxW?: 0,
+        lineHeight * lines.size
+    )
+}
+
+fun Font.splitLines(content: String, style: Style, width: Int): List<MutableComponent> {
+    val lines = splitter.splitLines(content, width, style)
+
+    return lines.map {
+        Component.literal(it.string).setStyle(style)
+    }
+}
+
+fun DrawStack.drawTextLines(x: Float, y: Float, font: Font, lines: List<Component>, color: Color) {
+    for ((i, line) in lines.withIndex()) {
+        drawText(font, line, x, y + (i * font.lineHeight), color)
+    }
 }
 
 fun DrawStack.drawTextLines(font: Font, text: String, x: Float, y: Float, color: Int) {
