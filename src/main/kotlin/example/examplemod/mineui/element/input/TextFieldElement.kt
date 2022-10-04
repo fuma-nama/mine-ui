@@ -125,7 +125,6 @@ fun DrawStack.drawHighlight(x: Int, y: Int, width: Int, height: Int, color: Int)
 
         tesselator.end()
     }
-
     RenderSystem.disableColorLogicOp()
     RenderSystem.disableTexture()
 }

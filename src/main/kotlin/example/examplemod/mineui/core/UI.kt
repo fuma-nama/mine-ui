@@ -10,7 +10,9 @@ import example.examplemod.mineui.wrapper.DrawStackDefault
 import example.examplemod.mineui.wrapper.GUIListener
 import net.minecraft.client.gui.Gui
 
-class UI(var size: Size? = null, render: Component.() -> Unit) {
+class UI(
+    var size: Size? = null, render: Component.() -> Unit
+) {
     val state = UIState()
     val root = Component(this, render, element = StackLayout())
 
@@ -52,12 +54,25 @@ class UI(var size: Size? = null, render: Component.() -> Unit) {
         )
     }
 
-    fun onType(char: Char, key: Int): Boolean {
-        executeFocus { element, context ->
-            element.onType(char, key, context)
+    fun onMouseMove(mouseX: Double, mouseY: Double) {
+        var reflow = false
+        forEach { element ->
+            val hovered = element.isIn(mouseX, mouseY)
+
+            if (element.updateUiState(hovered, element == state.focus)) {
+                reflow = true
+            }
         }
 
-        return true
+        if (reflow) {
+            reflow()
+        }
+    }
+
+    fun onType(char: Char, key: Int): Boolean {
+        return executeFocus { element, context ->
+            element.onType(char, key, context)
+        }
     }
 
     fun onMouseReleased(mouseX: Double, mouseY: Double, mouseButton: Int): Boolean {
@@ -109,10 +124,15 @@ class UI(var size: Size? = null, render: Component.() -> Unit) {
         }?: false
     }
 
-    fun execute(element: UIElement<*>, action: (GUIListener, GuiEventContext) -> Unit): GuiEventContext {
+    fun execute(element: UIElement<*>, action: (GUIListener, GuiEventContext) -> Unit, includeListener: Boolean = true): GuiEventContext {
         val context = GuiEventContext(element)
         action(element, context)
 
+        if (includeListener) {
+            element.listener?.let {
+                action(it, context)
+            }
+        }
         return context
     }
 
@@ -162,6 +182,22 @@ class UI(var size: Size? = null, render: Component.() -> Unit) {
         if (reflow) reflow()
         return prevent
     }
+
+    fun forEach(action: (UIElement<*>) -> Unit) {
+        fun next(element: UIElement<*>) {
+            if (element is Container<*>) {
+                for (child in element.children) {
+                    next(child)
+                }
+            }
+
+            action(element)
+        }
+
+        root.element?.let {
+            next(it)
+        }
+    }
 }
 
 data class HookKey(
@@ -169,7 +205,7 @@ data class HookKey(
 )
 
 enum class EventType {
-    Click, MouseMove, MouseScroll, MouseDrag, MouseRelease, KeyPressed, KeyReleased, Type
+    Click, MouseMove, MouseScroll, MouseDrag, MouseRelease
 }
 
 class UIState {

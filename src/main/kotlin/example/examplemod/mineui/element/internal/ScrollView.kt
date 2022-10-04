@@ -76,7 +76,7 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
     ) {
         when (scrolling) {
             Scrolling.X -> {
-                context.reflow = true
+                context.requireReflow()
                 val left = absoluteSize.width - thumbWidth
                 val moved: Double = dragX / left
                 scrollX = (scrollX + (maxScrollX * moved).toInt())
@@ -84,7 +84,7 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
                     .coerceAtLeast(0)
             }
             Scrolling.Y -> {
-                context.reflow = true
+                context.requireReflow()
                 val top = absoluteSize.height - thumbHeight
                 val moved: Double = dragY / top
                 scrollY = (scrollY + (maxScrollY * moved).toInt())
@@ -93,14 +93,12 @@ abstract class ScrollView<S: ScrollViewStyle>(create: () -> S) : BoxElement<S>(c
             }
             else -> {}
         }
-
-        return super.onDrag(mouseX, mouseY, mouseButton, dragX, dragY, context)
     }
 
     override fun onScroll(x: Double, y: Double, scroll: Double, context: GuiEventContext) {
         if (overflowY) {
-            context.reflow = true
-            context.prevent = true
+            context.requireReflow()
+            context.prevent()
             scrollY = (scrollY - (scroll * style.scrollbar.speed)).toInt()
                 .coerceAtMost(maxScrollY)
                 .coerceAtLeast(0)

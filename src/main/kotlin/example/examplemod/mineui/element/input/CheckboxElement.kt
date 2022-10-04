@@ -77,7 +77,7 @@ class CheckboxElement : UIElement<CheckboxStyle>(::CheckboxStyle) {
     }
 
     override fun onClick(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) {
-        context.reflow = true
+        context.requireReflow()
         style.onChange(!style.value)
         super.onClick(x, y, mouseButton, context)
     }

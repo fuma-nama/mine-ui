@@ -16,6 +16,9 @@ open class StyleContext: GuiListenerBuilder() {
     var position: PositionInput = Relative
     var requireFocus: Boolean = false
 
+    var hover: (() -> Unit)? = null
+    var focus: (() -> Unit)? = null
+
     open var size: SizeInput = FitContent
 
     fun size(width: Int, height: Int) {
@@ -35,7 +38,17 @@ open class StyleContext: GuiListenerBuilder() {
     }
 }
 
+fun<T: StyleContext> T.hover(on: T.() -> Unit) {
+    hover = {
+        on(this)
+    }
+}
+
 abstract class UIElement<S: StyleContext>(val createStyle: () -> S): RenderNode(), GUIListener {
+    var hovered: Boolean = false
+    var focused: Boolean = false
+    var styleSheet: S.() -> Unit = {}
+
     lateinit var ui: UI
     var style: S = createStyle()
     var listener: GUIListener? = null
@@ -44,30 +57,25 @@ abstract class UIElement<S: StyleContext>(val createStyle: () -> S): RenderNode(
         this.ui = ui
     }
 
-    override fun onType(char: Char, key: Int, context: GuiEventContext) {
-        listener?.onType(char, key, context)
-    }
+    fun updateUiState(hovered: Boolean, focused: Boolean): Boolean {
+        val reflow = this.hovered != hovered || this.focused != focused
 
-    override fun onDrag(
-        mouseX: Double,
-        mouseY: Double,
-        mouseButton: Int,
-        dragX: Double,
-        dragY: Double,
-        context: GuiEventContext
-    ) {
-        listener?.onDrag(mouseX, mouseY, mouseButton, dragX, dragY, context)
+        if (reflow) {
+            this.hovered = hovered
+            this.focused = focused
+
+            updateStyle()
+        }
+        return reflow
     }
 
     override fun onClick(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) {
         if (style.requireFocus) {
             ui.focus(this)
-            context.prevent = true
+            context.prevent()
         } else {
             ui.focus(null)
         }
-
-        listener?.onClick(x, y, mouseButton, context)
     }
 
     override fun reflow(pos: PosXY, size: Size) = Unit
@@ -81,8 +89,12 @@ abstract class UIElement<S: StyleContext>(val createStyle: () -> S): RenderNode(
         }
     }
 
-    open fun update(style: S.() -> Unit) {
-        this.style = createStyle().apply(style)
+    open fun updateStyle(style: S.() -> Unit = styleSheet) {
+        this.styleSheet = style
+        this.style = createStyle().apply(style).apply {
+            if (hovered) hover?.invoke()
+            if (focused) focus?.invoke()
+        }
         this.listener = this.style.buildListener()
     }
 

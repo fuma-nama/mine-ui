@@ -32,7 +32,7 @@ class Component(
         }
 
         val current = this.element as E
-        current.update(style)
+        current.updateStyle(style)
         return current
     }
 

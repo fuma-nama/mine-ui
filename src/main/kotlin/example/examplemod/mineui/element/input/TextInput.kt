@@ -57,8 +57,8 @@ abstract class TextInput<S: TextInputStyle>(create: () -> S)  : BoxElement<S>(cr
 
     override fun onKeyPressed(key: Int, p_94746_: Int, p_94747_: Int, context: GuiEventContext) {
         if (helper.keyPressed(key)) {
-            context.prevent = true
-            context.reflow = true
+            context.prevent()
+            context.requireReflow()
         }
 
         super.onKeyPressed(key, p_94746_, p_94747_, context)
@@ -73,17 +73,13 @@ abstract class TextInput<S: TextInputStyle>(create: () -> S)  : BoxElement<S>(cr
         context: GuiEventContext
     ) {
         helper.selectionPos = positionToIndex(mouseX, mouseY)
-
-        super.onDrag(mouseX, mouseY, mouseButton, dragX, dragY, context)
     }
 
     override fun onType(char: Char, key: Int, context: GuiEventContext) {
         if (helper.charTyped(char)) {
-            context.prevent = true
-            context.reflow = true
+            context.prevent()
+            context.requireReflow()
         }
-
-        super.onType(char, key, context)
     }
 
     override fun getContentSize(): Size {

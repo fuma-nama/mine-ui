@@ -63,7 +63,7 @@ class TextAreaElement : TextInput<TextAreaStyle>(::TextAreaStyle) {
         }
 
         if (prevent) {
-            context.prevent = prevent
+            context.prevent()
         }
 
         super.onKeyPressed(key, p_94746_, p_94747_, context)

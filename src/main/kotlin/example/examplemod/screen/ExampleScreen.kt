@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack
 import example.examplemod.ExampleMod
 import example.examplemod.mineui.*
 import example.examplemod.mineui.core.UI
+import example.examplemod.mineui.element.hover
 import example.examplemod.mineui.element.input.Cursor
 import example.examplemod.mineui.element.layout.StackLayout
 import example.examplemod.mineui.hooks.createContext
@@ -54,6 +55,10 @@ class ExampleGUI(p_96550_: Component) : Screen(p_96550_) {
 
     override fun mouseScrolled(p_94686_: Double, p_94687_: Double, p_94688_: Double): Boolean {
         return root.onScroll(p_94686_, p_94687_, p_94688_)
+    }
+
+    override fun mouseMoved(p_94758_: Double, p_94759_: Double) {
+        root.onMouseMove(p_94758_, p_94759_)
     }
 
     override fun mouseDragged(
@@ -119,6 +124,11 @@ fun example() = component {
         }
 
         border(5, 5, Color.WHITE)
+
+        hover {
+            color = Color.BLACK
+            background = Color.WHITE
+        }
     }) { "Click Me" }
 
     column({ background = Color.DARK_GRAY; gap = 5; padding(4) }) {
@@ -133,6 +143,18 @@ fun example() = component {
             size {
                 Size(500, 30)
             }
+        }
+
+        row({ gap = 5 }) {
+            radio {
+                var checked by useState { false }
+
+                value = checked
+                onChange = {
+                    checked = it
+                }
+            }
+            label { "Kill Kane" }
         }
 
         row({ gap = 5 }) {
