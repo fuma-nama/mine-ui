@@ -8,5 +8,7 @@ A high-performance Functional Programming style UI Framework for Minecraft Forge
 * Supports RichText (Minecraft Chat's `Component` class)
 * Filter such as blur and brightness
 * Supports Opacity property
-* ~~Checkbox~~ and Radio buttons
+* ~~Checkbox and Radio buttons~~
 * Support Mask Element
+* Translation, Animation Support
+* Gradient Backgrounds
