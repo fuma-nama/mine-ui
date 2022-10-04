@@ -13,6 +13,13 @@ import java.awt.Color
 interface BoxBuilder {
     var padding: Point4
     var border: Border?
+    var borderColor: Color?
+        get() = border?.color
+        set(v) {
+            border?.let {
+                border = it.copy(color = v?: it.color)
+            }
+        }
 
     fun border(x: Int = 0, y: Int = 0, color: Color) = border(y, x, x, y, color)
 

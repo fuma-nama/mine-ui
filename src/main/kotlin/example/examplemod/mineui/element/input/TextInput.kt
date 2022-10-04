@@ -36,6 +36,15 @@ open class TextInputStyle : BoxStyle(), LabelBuilder {
         placeholderColor = color
     }
 
+    fun cursor(
+        step: Int = 30,
+        color: Color = Color.CYAN,
+        width: Int = 1,
+        selection: Color = Color.CYAN,
+    ) {
+        this.cursor = Cursor(step, color, width, selection)
+    }
+
     init {
         requireFocus = true
     }
