@@ -24,7 +24,7 @@ data class Cursor(
     val step: Int = 30,
     val color: Color = Color.CYAN,
     val width: Int = 1,
-    val selection: Color = Color.CYAN,
+    val selection: Color = Color.CYAN.edit(alpha = 100),
     /**
      * Apply color reverse filter on selection
      */
@@ -47,11 +47,11 @@ open class TextInputStyle : BoxStyle(), LabelBuilder {
     }
 
     fun cursor(
-        step: Int = 30,
-        color: Color = Color.CYAN,
-        width: Int = 1,
-        selection: Color = Color.CYAN.edit(alpha = 100),
-        reverseColor: Boolean = false
+        step: Int = cursor.step,
+        color: Color = cursor.color,
+        width: Int = cursor.width,
+        selection: Color = cursor.selection,
+        reverseColor: Boolean = cursor.reverseColor
     ) {
         this.cursor = Cursor(step, color, width, selection, reverseColor)
     }
@@ -130,6 +130,7 @@ abstract class TextInput<S: TextInputStyle>(create: () -> S)  : BoxElement<S>(cr
         }
 
         drawHighlight(x, y, width, height, cursor.selection.rgb)
+        RenderSystem.disableColorLogicOp()
     }
 }
 
@@ -141,6 +142,8 @@ fun DrawStack.drawHighlight(x: Int, y: Int, width: Int, height: Int, color: Int)
 
     val tesselator = Tesselator.getInstance()
     val bufferbuilder = tesselator.builder
+    RenderSystem.enableBlend()
+    RenderSystem.defaultBlendFunc()
     RenderSystem.setShader { GameRenderer.getPositionShader() }
     RenderSystem.setShaderColor(r, g, b, a)
     RenderSystem.disableTexture()
@@ -159,7 +162,6 @@ fun DrawStack.drawHighlight(x: Int, y: Int, width: Int, height: Int, color: Int)
 
         tesselator.end()
     }
-    RenderSystem.disableColorLogicOp()
-    RenderSystem.disableTexture()
+
     RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
 }
