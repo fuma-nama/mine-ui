@@ -4,8 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack
 import example.examplemod.ExampleMod
 import example.examplemod.mineui.*
 import example.examplemod.mineui.core.UI
+import example.examplemod.mineui.element.focus
 import example.examplemod.mineui.element.hover
-import example.examplemod.mineui.element.input.Cursor
 import example.examplemod.mineui.element.layout.StackLayout
 import example.examplemod.mineui.hooks.createContext
 import example.examplemod.mineui.hooks.useContext
@@ -181,17 +181,21 @@ fun example() = component {
         }) {
             var input by useState { "Text" }
             textField {
-                cursor = Cursor(
+                value = input
+                onChange = {
+                    input = it
+                }
+                placeholder("Enter here...")
+                cursor(
                     selection = Color.pink,
                     color = Color.pink
                 )
                 size {
                     Size(100, content.height)
                 }
-                placeholder("Enter here...")
-                value = input
-                onChange = {
-                    input = it
+
+                focus {
+                    borderColor = Color.pink
                 }
             }
 
