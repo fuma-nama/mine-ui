@@ -54,10 +54,6 @@ open class GuiListenerBuilder {
                 onClick?.invoke(context, x, y, mouseButton)
             }
 
-            override fun onMouseMoved(x: Double, y: Double, context: GuiEventContext) {
-                onMouseMove?.invoke(context, x, y)
-            }
-
             override fun onMouseReleased(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) {
                 onMouseRelease?.invoke(context, x, y, mouseButton)
             }
@@ -95,8 +91,6 @@ interface GUIListener {
         context: GuiEventContext,
     ) = Unit
     fun onType(char: Char, key: Int, context: GuiEventContext) = Unit
-
-    fun onMouseMoved(x: Double, y: Double, context: GuiEventContext) = Unit
 
     fun onMouseReleased(x: Double, y: Double, mouseButton: Int, context: GuiEventContext) = Unit
 
