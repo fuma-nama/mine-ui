@@ -29,7 +29,7 @@ class TextFieldElement : TextInput<TextFieldStyle>(::TextFieldStyle) {
     fun asComponent(value: String = this.value) = Component.literal(value).setStyle(style.textStyle)
 
     override fun positionToIndex(mouseX: Double, mouseY: Double): Int {
-        val ox = mouseX - (contentOffset.x + absolutePosition.x) - offsetX
+        val ox = mouseX - (contentOffset.x + absolutePosition.x) + offsetX
 
         return splitter.plainIndexAtWidth(value, ox.toInt(), style.textStyle).coerceIn(0, value.length)
     }
@@ -40,8 +40,10 @@ class TextFieldElement : TextInput<TextFieldStyle>(::TextFieldStyle) {
 
         if (value.isNotEmpty()) {
             if (cursorPos + cursorSpace > size.width) {
-                this.offsetX = - (cursorPos + cursorSpace - size.width)
-                stack.translate(x = offsetX)
+                this.offsetX = cursorPos + cursorSpace - size.width
+                stack.translate(x = -offsetX)
+            } else {
+                this.offsetX = 0
             }
 
             stack.drawText(style.font, asComponent(), 0F, 0F, style.color)
