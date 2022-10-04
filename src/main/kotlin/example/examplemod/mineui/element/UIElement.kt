@@ -37,7 +37,11 @@ open class StyleContext: GuiListenerBuilder() {
         position = DynamicPosition { dynamic(it) }
     }
 }
-
+fun<T: StyleContext> T.focus(on: T.() -> Unit) {
+    focus = {
+        on(this)
+    }
+}
 fun<T: StyleContext> T.hover(on: T.() -> Unit) {
     hover = {
         on(this)

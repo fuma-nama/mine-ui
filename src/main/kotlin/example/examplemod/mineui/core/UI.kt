@@ -24,6 +24,17 @@ class UI(
 
     fun focus(element: UIElement<*>?) {
         this.state.focus = element
+
+        var reflow = false
+        forEach { child ->
+            if (child.updateUiState(child.hovered, child == state.focus)) {
+                reflow = true
+            }
+        }
+
+        if (reflow) {
+            reflow()
+        }
     }
 
     fun updateSize(w: Int, h: Int) {
