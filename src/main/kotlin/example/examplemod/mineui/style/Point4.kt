@@ -1,5 +1,6 @@
 package example.examplemod.mineui.style
 
+import example.examplemod.mineui.utils.Size
 import java.awt.Color
 
 data class Point4(
@@ -10,6 +11,8 @@ data class Point4(
 ) {
     val px: Int get() = left + right
     val py: Int get() = top + bottom
+
+    fun toSize(): Size = Size(px, py)
 
     companion object {
         val Empty = Point4(0, 0, 0, 0)

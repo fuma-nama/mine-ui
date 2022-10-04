@@ -10,6 +10,9 @@ data class Size(val width: Int, val height: Int): SizeInput {
     operator fun plus(other: Size): Size {
         return Size(width + other.width, height + other.height)
     }
+    operator fun minus(other: Size): Size {
+        return Size(width - other.width, height - other.height)
+    }
 
     fun plus(width: Int = 0, height: Int = 0): Size {
         return Size(this.width + width, this.height + height)
