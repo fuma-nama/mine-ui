@@ -125,3 +125,8 @@ fun Component.checkbox(style: CheckboxStyle.() -> Unit) = checkbox(style::class,
 fun Component.checkbox(key: Any, style: CheckboxStyle.() -> Unit = {}) = child(key) {
     element(::CheckboxElement, style)
 }
+
+fun Component.radio(style: RadioButtonStyle.() -> Unit) = radio(style::class, style)
+fun Component.radio(key: Any, style: RadioButtonStyle.() -> Unit = {}) = child(key) {
+    element(::RadioButtonElement, style)
+}
