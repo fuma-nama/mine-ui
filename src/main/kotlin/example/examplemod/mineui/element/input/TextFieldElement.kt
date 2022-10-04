@@ -127,4 +127,5 @@ fun DrawStack.drawHighlight(x: Int, y: Int, width: Int, height: Int, color: Int)
     }
     RenderSystem.disableColorLogicOp()
     RenderSystem.disableTexture()
+    RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
 }
