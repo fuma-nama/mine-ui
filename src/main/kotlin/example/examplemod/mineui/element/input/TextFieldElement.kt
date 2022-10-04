@@ -1,16 +1,10 @@
 package example.examplemod.mineui.element.input
 
-import com.mojang.blaze3d.platform.GlStateManager
-import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.vertex.DefaultVertexFormat
-import com.mojang.blaze3d.vertex.Tesselator
-import com.mojang.blaze3d.vertex.VertexFormat
 import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.utils.Size
 import example.examplemod.mineui.wrapper.DrawStack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.font.TextFieldHelper
-import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
 import java.awt.Color
 
@@ -57,7 +51,7 @@ class TextFieldElement : TextInput<TextFieldStyle>(::TextFieldStyle) {
                 val left = cursorPos.coerceAtMost(selectionPos)
                 val right = cursorPos.coerceAtLeast(selectionPos)
 
-                stack.drawHighlight(left, 0, right - left, style.font.lineHeight, style.cursor.selection.rgb)
+                stack.drawHighlight(left, 0, right - left, style.font.lineHeight)
             }
         } else {
             stack.drawText(style.font, style.placeholder, 0F, 0F, style.placeholderColor)
@@ -96,36 +90,4 @@ class FieldHelperImpl(v: () -> String, setV: (String) -> Unit, validator: (Strin
             tick + 1
         }
     }
-}
-
-fun DrawStack.drawHighlight(x: Int, y: Int, width: Int, height: Int, color: Int) {
-    val a = (color shr 24 and 255).toFloat() / 255.0f
-    val r = (color shr 16 and 255).toFloat() / 255.0f
-    val g = (color shr 8 and 255).toFloat() / 255.0f
-    val b = (color and 255).toFloat() / 255.0f
-
-    val tesselator = Tesselator.getInstance()
-    val bufferbuilder = tesselator.builder
-    RenderSystem.setShader { GameRenderer.getPositionShader() }
-    RenderSystem.setShaderColor(r, g, b, a)
-    RenderSystem.disableTexture()
-    RenderSystem.enableColorLogicOp()
-    RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE)
-    with (bufferbuilder) {
-        begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION)
-
-        val i = translated.x + x
-        val j = translated.y + y
-        val k = i + width
-        val l = j + height
-        vertex(i.toDouble(), l.toDouble(), 0.0).endVertex()
-        vertex(k.toDouble(), l.toDouble(), 0.0).endVertex()
-        vertex(k.toDouble(), j.toDouble(), 0.0).endVertex()
-        vertex(i.toDouble(), j.toDouble(), 0.0).endVertex()
-
-        tesselator.end()
-    }
-    RenderSystem.disableColorLogicOp()
-    RenderSystem.disableTexture()
-    RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
 }

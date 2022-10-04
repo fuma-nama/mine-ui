@@ -1,16 +1,22 @@
 package example.examplemod.mineui.element.input
 
+import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.DefaultVertexFormat
+import com.mojang.blaze3d.vertex.Tesselator
+import com.mojang.blaze3d.vertex.VertexFormat
 import example.examplemod.mineui.core.GuiEventContext
 import example.examplemod.mineui.element.BoxElement
 import example.examplemod.mineui.element.BoxStyle
 import example.examplemod.mineui.element.LabelBuilder
 import example.examplemod.mineui.style.PosXY
 import example.examplemod.mineui.utils.Size
+import example.examplemod.mineui.utils.edit
 import example.examplemod.mineui.wrapper.DrawStack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Style
 import java.awt.Color
 
@@ -19,6 +25,10 @@ data class Cursor(
     val color: Color = Color.CYAN,
     val width: Int = 1,
     val selection: Color = Color.CYAN,
+    /**
+     * Apply color reverse filter on selection
+     */
+    val reverseColor: Boolean = false
 )
 
 open class TextInputStyle : BoxStyle(), LabelBuilder {
@@ -40,9 +50,10 @@ open class TextInputStyle : BoxStyle(), LabelBuilder {
         step: Int = 30,
         color: Color = Color.CYAN,
         width: Int = 1,
-        selection: Color = Color.CYAN,
+        selection: Color = Color.CYAN.edit(alpha = 100),
+        reverseColor: Boolean = false
     ) {
-        this.cursor = Cursor(step, color, width, selection)
+        this.cursor = Cursor(step, color, width, selection, reverseColor)
     }
 
     init {
@@ -110,4 +121,45 @@ abstract class TextInput<S: TextInputStyle>(create: () -> S)  : BoxElement<S>(cr
     }
 
     abstract fun drawInput(stack: DrawStack, size: Size, focus: Boolean)
+
+    fun DrawStack.drawHighlight(x: Int, y: Int, width: Int, height: Int) {
+        val cursor = style.cursor
+        if (cursor.reverseColor) {
+            RenderSystem.enableColorLogicOp()
+            RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE)
+        }
+
+        drawHighlight(x, y, width, height, cursor.selection.rgb)
+    }
+}
+
+fun DrawStack.drawHighlight(x: Int, y: Int, width: Int, height: Int, color: Int) {
+    val a = (color shr 24 and 255).toFloat() / 255.0f
+    val r = (color shr 16 and 255).toFloat() / 255.0f
+    val g = (color shr 8 and 255).toFloat() / 255.0f
+    val b = (color and 255).toFloat() / 255.0f
+
+    val tesselator = Tesselator.getInstance()
+    val bufferbuilder = tesselator.builder
+    RenderSystem.setShader { GameRenderer.getPositionShader() }
+    RenderSystem.setShaderColor(r, g, b, a)
+    RenderSystem.disableTexture()
+
+    with (bufferbuilder) {
+        begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION)
+
+        val i = translated.x + x
+        val j = translated.y + y
+        val k = i + width
+        val l = j + height
+        vertex(i.toDouble(), l.toDouble(), 0.0).endVertex()
+        vertex(k.toDouble(), l.toDouble(), 0.0).endVertex()
+        vertex(k.toDouble(), j.toDouble(), 0.0).endVertex()
+        vertex(i.toDouble(), j.toDouble(), 0.0).endVertex()
+
+        tesselator.end()
+    }
+    RenderSystem.disableColorLogicOp()
+    RenderSystem.disableTexture()
+    RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
 }

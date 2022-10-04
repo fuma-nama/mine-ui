@@ -188,7 +188,7 @@ class TextAreaElement : TextInput<TextAreaStyle>(::TextAreaStyle) {
                         else -> size.width
                     }
 
-                    stack.drawHighlight(left, line.y, right - left, lineHeight, style.cursor.selection.rgb)
+                    stack.drawHighlight(left, line.y, right - left, lineHeight)
                 }
             }
         } else {
