@@ -12,6 +12,7 @@ import example.examplemod.mineui.hooks.useContext
 import example.examplemod.mineui.hooks.useState
 import example.examplemod.mineui.style.*
 import example.examplemod.mineui.utils.Size
+import example.examplemod.mineui.utils.edit
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -187,7 +188,7 @@ fun example() = component {
                 }
                 placeholder("Enter here...")
                 cursor(
-                    selection = Color.pink,
+                    selection = Color.pink.edit(alpha = 0.4f),
                     color = Color.pink
                 )
                 size {
