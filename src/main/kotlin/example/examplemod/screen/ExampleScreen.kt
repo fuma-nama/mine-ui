@@ -132,7 +132,7 @@ fun example() = component {
         }
     }) { "Click Me" }
 
-    column({ background = Color.DARK_GRAY; gap = 5; padding(4) }) {
+    column({ gap = 5; padding(4); backgroundGradient = Color.RED to Color.BLUE }) {
         var description by useState { "" }
         label { description }
         textArea {

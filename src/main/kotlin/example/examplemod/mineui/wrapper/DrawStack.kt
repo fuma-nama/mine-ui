@@ -13,9 +13,11 @@ import net.minecraft.network.chat.FormattedText
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.chat.Style
 import net.minecraft.resources.ResourceLocation
+import net.minecraftforge.client.gui.ScreenUtils
 import java.awt.Color
 
 open class DrawStackDefault(val base: PoseStack): DrawStack {
+    override val pose: PoseStack = base
     override var translated: PosXY = PosXY(0, 0)
 
     override fun drawText(font: Font, text: String, x: Float, y: Float, color: Int) {
@@ -76,9 +78,17 @@ open class DrawStackDefault(val base: PoseStack): DrawStack {
 
         Gui.fill(base, ox, oy, ox + width, oy + height, color)
     }
+
+    override fun fillGradientRect(x: Int, y: Int, width: Int, height: Int, start: Int, end: Int) {
+        val ox = x + translated.x
+        val oy = y + translated.y
+
+        ScreenUtils.drawGradientRect(pose.last().pose(), 0, ox, oy, ox + width, oy + height, start, end)
+    }
 }
 
 interface DrawStack {
+    val pose: PoseStack
     var translated: PosXY
 
     fun translate(x: Int = 0, y: Int = 0)  {
@@ -111,6 +121,8 @@ interface DrawStack {
     fun scissor(x: Int, y: Int, width: Int, height: Int)
 
     fun scale(x: Float, y: Float, z: Float)
+
+    fun fillGradientRect(x: Int, y: Int, width: Int, height: Int, start: Int, end: Int)
 }
 
 fun DrawStack.lockState(render: () -> Unit) {

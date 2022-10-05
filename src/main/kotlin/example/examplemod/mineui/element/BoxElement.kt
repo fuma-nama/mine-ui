@@ -48,6 +48,7 @@ open class BoxStyle: StyleContext(), BoxBuilder {
     override var padding = Point4.Empty
     open var background: Color? = null
     open var backgroundImage: ResourceLocation? = null
+    var backgroundGradient: Pair<Color, Color>? = null
 
     /**
      * Size of background image
@@ -115,6 +116,10 @@ abstract class BoxElement<S: BoxStyle>(create: () -> S): UIElement<S>(create) {
         with(style) {
             if (background != null) {
                 stack.fillRect(0, 0, size.width, size.height, background!!)
+            }
+            if (backgroundGradient != null) {
+                val (start, end) = backgroundGradient!!
+                stack.fillGradientRect(0, 0, size.width, size.height, start.rgb, end.rgb)
             }
             if (backgroundImage != null) {
                 stack.drawImage(backgroundFit, backgroundSize ?: size, backgroundImage!!)
